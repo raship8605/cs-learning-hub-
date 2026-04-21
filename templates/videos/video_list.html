@@ -205,9 +205,9 @@
     var currentSearch = '';
     
     var subjectNames = {'all': 'All Videos'};
-    {% for subject in subjects %}
-    subjectNames['{{ subject.id }}'] = '{{ subject.name }}';
-    {% endfor %}
+    // {% for subject in subjects %}
+    // subjectNames['{{ subject.id }}'] = '{{ subject.name }}';
+    // {% endfor %}
     
     function filterVideos() {
         var visibleCount = 0;
