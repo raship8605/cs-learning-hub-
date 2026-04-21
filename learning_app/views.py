@@ -138,12 +138,17 @@ def video_detail(request, video_id):
 @login_required
 def notes_list(request):
     subject_id = request.GET.get('subject')
+    search_query = request.GET.get('search')
+    
     notes = Note.objects.all()
     
     if subject_id:
         notes = notes.filter(subject_id=subject_id)
+    if search_query:
+        notes = notes.filter(Q(title__icontains=search_query) | Q(description__icontains=search_query))
     
     subjects = Subject.objects.all()
+    
     context = {
         'notes': notes,
         'subjects': subjects,
@@ -151,13 +156,13 @@ def notes_list(request):
     }
     return render(request, 'notes/notes_list.html', context)
 
-# Download Note
 @login_required
 def download_note(request, note_id):
     note = get_object_or_404(Note, id=note_id)
     note.downloads += 1
     note.save()
     
+    # Log activity
     UserActivity.objects.get_or_create(
         user=request.user,
         activity_type='note_download',
@@ -166,8 +171,7 @@ def download_note(request, note_id):
         defaults={'content_title': note.title}
     )
     
-    return HttpResponseRedirect(note.file.url)
-
+    return redirect(note.file.url)
 @login_required
 def quiz_list(request):
     quizzes = Quiz.objects.filter(is_active=True)

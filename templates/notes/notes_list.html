@@ -1,6 +1,356 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h2>Notes Page</h2>
-<p>This is notes content</p>
+<style>
+    /* Hero Section */
+    .notes-hero {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 50px 40px;
+        border-radius: 20px;
+        margin-bottom: 40px;
+        text-align: center;
+    }
+    
+    .notes-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .notes-hero h1 i {
+        margin-right: 15px;
+    }
+    
+    /* Subject Filter Cards */
+    .subject-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 15px;
+        padding: 15px;
+        text-align: center;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .subject-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .subject-card.active {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+    }
+    
+    .subject-card.active .text-muted {
+        color: rgba(255,255,255,0.8) !important;
+    }
+    
+    .subject-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    
+    /* Note Cards */
+    .note-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        height: 100%;
+    }
+    
+    .note-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .note-icon {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .note-icon i {
+        font-size: 3rem;
+        color: white;
+    }
+    
+    .download-btn {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        padding: 8px 20px;
+        border-radius: 25px;
+        transition: all 0.3s;
+    }
+    
+    .download-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+    }
+    
+    /* Search Box */
+    .search-wrapper {
+        position: relative;
+        margin-bottom: 30px;
+    }
+    
+    .search-wrapper i {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+    }
+    
+    .search-input {
+        width: 100%;
+        padding: 14px 20px 14px 50px;
+        border: 2px solid #e0e0e0;
+        border-radius: 50px;
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: #28a745;
+        box-shadow: 0 0 0 3px rgba(40,167,69,0.1);
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: #f8f9fa;
+        border-radius: 20px;
+    }
+    
+    .empty-state i {
+        font-size: 80px;
+        color: #ccc;
+        margin-bottom: 20px;
+    }
+    
+    /* Section Title */
+    .section-title {
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #28a745;
+        display: inline-block;
+    }
+    
+    /* File Badge */
+    .file-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+    }
+</style>
+
+<div class="container py-4">
+    <!-- Hero Section -->
+    <div class="notes-hero">
+        <h1>
+            <i class="fas fa-book-open"></i> Study Notes
+        </h1>
+        <p class="lead mb-0">Download comprehensive notes for all computer science subjects</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" class="search-input" id="searchNotes" placeholder="Search for notes...">
+    </div>
+
+    <!-- Subject Filters -->
+    <div class="mb-5">
+        <h4 class="section-title">
+            <i class="fas fa-graduation-cap me-2"></i>Subjects
+        </h4>
+        <div class="row" id="subjectFilters">
+            <div class="col-md-2 col-6 mb-3">
+                <div class="subject-card active" data-subject="all">
+                    <div class="subject-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h6 class="mb-0">All Notes</h6>
+                    <small class="text-muted">{{ notes|length }} notes</small>
+                </div>
+            </div>
+            {% for subject in subjects %}
+            <div class="col-md-2 col-6 mb-3">
+                <div class="subject-card" data-subject="{{ subject.id }}">
+                    <div class="subject-icon">
+                        {% if subject.name == "Python" %}
+                            <i class="fab fa-python" style="color: #3776AB;"></i>
+                        {% elif subject.name == "JavaScript" %}
+                            <i class="fab fa-js" style="color: #F7DF1E;"></i>
+                        {% elif subject.name == "Java" %}
+                            <i class="fab fa-java" style="color: #007396;"></i>
+                        {% elif subject.name == "Django" %}
+                            <i class="fab fa-python" style="color: #092E20;"></i>
+                        {% elif subject.name == "HTML" or subject.name == "CSS" %}
+                            <i class="fab fa-html5" style="color: #E34F26;"></i>
+                        {% elif subject.name == "Data Structures" %}
+                            <i class="fas fa-tree" style="color: #28a745;"></i>
+                        {% else %}
+                            <i class="fas fa-book" style="color: #28a745;"></i>
+                        {% endif %}
+                    </div>
+                    <h6 class="mb-0">{{ subject.name }}</h6>
+                    <small class="text-muted">{{ subject.notes.count }} notes</small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Notes Grid -->
+    <div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="section-title" style="border-bottom: none;">
+                <i class="fas fa-file-alt text-success me-2"></i>
+                <span id="categoryTitle">All Notes</span>
+            </h4>
+            <span class="text-muted" id="notesCount"></span>
+        </div>
+        
+        <div class="row" id="notesContainer">
+            {% for note in notes %}
+            <div class="col-md-6 col-lg-4 mb-4 note-item" data-subject="{{ note.subject.id }}" data-title="{{ note.title|lower }}">
+                <div class="note-card">
+                    <div class="note-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="p-3">
+                        <span class="badge bg-success mb-2">{{ note.subject.name }}</span>
+                        <h5 class="card-title mb-2">{{ note.title|truncatechars:50 }}</h5>
+                        <p class="small text-muted mb-3">{{ note.description|truncatechars:80|default:"Comprehensive study material with examples and practice questions." }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-download me-1"></i> {{ note.downloads }} downloads
+                            </small>
+                            <a href="{% url 'download_note' note.id %}" class="btn btn-success btn-sm download-btn">
+                                <i class="fas fa-download me-1"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="fas fa-book-open"></i>
+                    <h4>No Notes Available</h4>
+                    <p class="text-muted">Check back later for new study materials!</p>
+                    {% if user.is_superuser %}
+                    <a href="/admin/learning_app/note/add/" class="btn btn-success mt-2">
+                        <i class="fas fa-plus me-2"></i>Add Notes (Admin)
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- No Results Message -->
+    <div id="noResults" class="empty-state" style="display: none;">
+        <i class="fas fa-search"></i>
+        <h4>No notes found</h4>
+        <p class="text-muted">Try a different subject or search term</p>
+        <button class="btn btn-outline-success" onclick="resetFilters()">
+            <i class="fas fa-redo me-2"></i>Reset Filters
+        </button>
+    </div>
+</div>
+
+<script>
+    var subjectCards = document.querySelectorAll('.subject-card');
+    var noteItems = document.querySelectorAll('.note-item');
+    var searchInput = document.getElementById('searchNotes');
+    var noResults = document.getElementById('noResults');
+    var categoryTitle = document.getElementById('categoryTitle');
+    var notesCount = document.getElementById('notesCount');
+    
+    var currentSubject = 'all';
+    var currentSearch = '';
+    
+    var subjectNames = {'all': 'All Notes'};
+    {% for subject in subjects %}
+    subjectNames['{{ subject.id }}'] = '{{ subject.name }}';
+    {% endfor %}
+    
+    function filterNotes() {
+        var visibleCount = 0;
+        for (var i = 0; i < noteItems.length; i++) {
+            var item = noteItems[i];
+            var itemSubject = item.getAttribute('data-subject');
+            var itemTitle = item.getAttribute('data-title');
+            var subjectMatch = (currentSubject === 'all' || itemSubject === currentSubject);
+            var searchMatch = (currentSearch === '' || (itemTitle && itemTitle.indexOf(currentSearch) !== -1));
+            if (subjectMatch && searchMatch) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        }
+        categoryTitle.textContent = subjectNames[currentSubject] || 'Notes';
+        notesCount.textContent = visibleCount + ' note' + (visibleCount !== 1 ? 's' : '');
+        if (visibleCount === 0 && noteItems.length > 0) {
+            noResults.style.display = 'block';
+        } else {
+            noResults.style.display = 'none';
+        }
+    }
+    
+    for (var i = 0; i < subjectCards.length; i++) {
+        var card = subjectCards[i];
+        card.addEventListener('click', (function(c) {
+            return function() {
+                for (var j = 0; j < subjectCards.length; j++) {
+                    subjectCards[j].classList.remove('active');
+                }
+                c.classList.add('active');
+                currentSubject = c.getAttribute('data-subject');
+                filterNotes();
+            };
+        })(card));
+    }
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            currentSearch = this.value.toLowerCase();
+            filterNotes();
+        });
+    }
+    
+    function resetFilters() {
+        currentSubject = 'all';
+        for (var i = 0; i < subjectCards.length; i++) {
+            if (subjectCards[i].getAttribute('data-subject') === 'all') {
+                subjectCards[i].classList.add('active');
+            } else {
+                subjectCards[i].classList.remove('active');
+            }
+        }
+        if (searchInput) searchInput.value = '';
+        currentSearch = '';
+        filterNotes();
+    }
+    
+    window.resetFilters = resetFilters;
+    filterNotes();
+</script>
 {% endblock %}
