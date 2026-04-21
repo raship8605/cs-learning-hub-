@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .quiz-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .timer-card {
+        background: rgba(255,255,255,0.2);
+        border-radius: 15px;
+        padding: 15px 25px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+    
+    .timer-display {
+        font-size: 2.5rem;
+        font-weight: bold;
+        font-family: monospace;
+        letter-spacing: 2px;
+    }
+    
+    .question-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+    }
+    
+    .question-card:hover {
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .question-number {
+        background: #007bff;
+        color: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        font-weight: bold;
+    }
+    
+    .option-wrapper {
+        margin-bottom: 10px;
+    }
+    
+    .option-input {
+        display: none;
+    }
+    
+    .option-label {
+        cursor: pointer;
+        padding: 12px 15px;
+        border-radius: 10px;
+        transition: all 0.3s;
+        border: 2px solid #e0e0e0;
+        display: block;
+    }
+    
+    .option-label:hover {
+        background: #f8f9fa;
+        border-color: #007bff;
+    }
+    
+    .option-input:checked + .option-label {
+        background: #e7f1ff;
+        border-color: #007bff;
+        font-weight: 500;
+    }
+    
+    .progress-bar-custom {
+        height: 8px;
+        border-radius: 4px;
+        background: #e0e0e0;
+        margin-bottom: 20px;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #007bff, #6610f2);
+        border-radius: 4px;
+        transition: width 0.3s;
+    }
+    
+    .btn-warning, .btn-secondary {
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: bold;
+    }
+</style>
+
+<div class="container py-4">
+    <!-- Quiz Header -->
+    <div class="quiz-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="mb-2">{{ quiz.title }}</h2>
+                <p class="mb-0">{{ quiz.description }}</p>
+                <small class="mt-2 d-block">
+                    <i class="fas fa-tag me-1"></i> {{ quiz.subject.name }}
+                </small>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="timer-card">
+                    <i class="fas fa-hourglass-half me-2"></i>
+                    <span class="timer-display" id="timer">00:00</span>
+                    <div><small>Time Remaining</small></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Progress Bar -->
+    <div class="progress-bar-custom">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+    
+    <!-- Quiz Form -->
+    <form method="POST" id="quizForm">
+        {% csrf_token %}
+        <input type="hidden" name="quiz_id" value="{{ quiz.id }}">
+        
+        {% for question in questions %}
+            <div class="question-card" data-question="{{ forloop.counter0 }}">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="question-number">{{ forloop.counter }}</span>
+                    <h5 class="mb-0">Question {{ forloop.counter }} of {{ questions|length }}</h5>
+                </div>
+                
+                <p class="fs-5 mb-4">{{ question.question_text }}</p>
+                
+                <div class="options">
+                    <div class="option-wrapper">
+                        <input type="radio" name="q{{ question.id }}" value="A" id="q{{ question.id }}_a" class="option-input">
+                        <label for="q{{ question.id }}_a" class="option-label">
+                            <strong>A.</strong> {{ question.option_a }}
+                        </label>
+                    </div>
+                    <div class="option-wrapper">
+                        <input type="radio" name="q{{ question.id }}" value="B" id="q{{ question.id }}_b" class="option-input">
+                        <label for="q{{ question.id }}_b" class="option-label">
+                            <strong>B.</strong> {{ question.option_b }}
+                        </label>
+                    </div>
+                    <div class="option-wrapper">
+                        <input type="radio" name="q{{ question.id }}" value="C" id="q{{ question.id }}_c" class="option-input">
+                        <label for="q{{ question.id }}_c" class="option-label">
+                            <strong>C.</strong> {{ question.option_c }}
+                        </label>
+                    </div>
+                    <div class="option-wrapper">
+                        <input type="radio" name="q{{ question.id }}" value="D" id="q{{ question.id }}_d" class="option-input">
+                        <label for="q{{ question.id }}_d" class="option-label">
+                            <strong>D.</strong> {{ question.option_d }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        
+        <div class="text-center mt-4 mb-5">
+            <button type="button" class="btn btn-warning btn-lg me-3" onclick="confirmSubmit()">
+                <i class="fas fa-flag-checkered me-2"></i> Submit Quiz
+            </button>
+            <button type="button" class="btn btn-secondary btn-lg" onclick="resetAnswers()">
+                <i class="fas fa-redo me-2"></i> Reset All
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Get data from Django template
+    let timeLeft = parseInt('{{ quiz.duration_minutes }}') * 60;
+    const timerDisplay = document.getElementById('timer');
+    const quizForm = document.getElementById('quizForm');
+    const progressFill = document.getElementById('progressFill');
+    const totalQuestions = parseInt('{{ questions|length }}');
+    let timerInterval;
+    
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+        
+        if (timeLeft <= 60) {
+            timerDisplay.style.color = '#ff4444';
+        } else if (timeLeft <= 300) {
+            timerDisplay.style.color = '#ffaa00';
+        }
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert("Time's up! Submitting your quiz...");
+            quizForm.submit();
+        }
+        timeLeft--;
+    }
+    
+    timerInterval = setInterval(updateTimer, 1000);
+    
+    function updateProgress() {
+        const answered = document.querySelectorAll('.option-input:checked').length;
+        const percentage = (answered / totalQuestions) * 100;
+        if (progressFill) {
+            progressFill.style.width = percentage + '%';
+        }
+    }
+    
+    const radioButtons = document.querySelectorAll('.option-input');
+    radioButtons.forEach(function(radio) {
+        radio.addEventListener('change', updateProgress);
+    });
+    
+    updateProgress();
+    
+    function confirmSubmit() {
+        const answered = document.querySelectorAll('.option-input:checked').length;
+        if (answered < totalQuestions) {
+            if (confirm("You have answered " + answered + " out of " + totalQuestions + " questions.\nAre you sure you want to submit?")) {
+                clearInterval(timerInterval);
+                quizForm.submit();
+            }
+        } else {
+            if (confirm('Are you sure you want to submit your quiz?')) {
+                clearInterval(timerInterval);
+                quizForm.submit();
+            }
+        }
+    }
+    
+    function resetAnswers() {
+        if (confirm('Reset all your answers?')) {
+            document.querySelectorAll('.option-input').forEach(function(radio) {
+                radio.checked = false;
+            });
+            updateProgress();
+        }
+    }
+    
+    function saveAnswers() {
+        var answers = {};
+        document.querySelectorAll('.option-input:checked').forEach(function(checked) {
+            answers[checked.name] = checked.value;
+        });
+        localStorage.setItem('quiz_{{ quiz.id }}', JSON.stringify(answers));
+    }
+    
+    function loadAnswers() {
+        var saved = localStorage.getItem('quiz_{{ quiz.id }}');
+        if (saved) {
+            var answers = JSON.parse(saved);
+            Object.keys(answers).forEach(function(name) {
+                var radio = document.querySelector('input[name="' + name + '"][value="' + answers[name] + '"]');
+                if (radio) radio.checked = true;
+            });
+            updateProgress();
+        }
+    }
+    
+    window.addEventListener('beforeunload', saveAnswers);
+    loadAnswers();
+</script>
+{% endblock %}

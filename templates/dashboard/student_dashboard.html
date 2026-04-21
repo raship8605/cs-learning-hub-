@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Welcome, {{ user.username }}! 👋</h2>
+
+<div class="row">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-primary text-white">
+            <div class="card-body">
+                <i class="fas fa-video fa-2x"></i>
+                <h3>{{ stats.videos_watched }}</h3>
+                <p>Videos Watched</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-success text-white">
+            <div class="card-body">
+                <i class="fas fa-file-alt fa-2x"></i>
+                <h3>{{ stats.notes_downloaded }}</h3>
+                <p>Notes Downloaded</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-warning text-white">
+            <div class="card-body">
+                <i class="fas fa-question-circle fa-2x"></i>
+                <h3>{{ stats.quizzes_taken }}</h3>
+                <p>Quizzes Taken</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-info text-white">
+            <div class="card-body">
+                <i class="fas fa-chart-line fa-2x"></i>
+                <h3>{{ stats.avg_score|floatformat:0 }}%</h3>
+                <p>Average Score</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                {% for activity in recent_activities %}
+                    <div class="mb-2">
+                        <i class="fas fa-clock text-muted"></i>
+                        {{ activity.content_title }} - {{ activity.timestamp|timesince }} ago
+                    </div>
+                {% empty %}
+                    <p>No activities yet. Start learning!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Quick Links</h5>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'video_list' %}" class="btn btn-primary w-100 mb-2">📺 Watch Videos</a>
+                <a href="{% url 'notes_list' %}" class="btn btn-success w-100 mb-2">📚 Download Notes</a>
+                <a href="{% url 'quiz_list' %}" class="btn btn-warning w-100 mb-2">📝 Take Quiz</a>
+                <a href="{% url 'papers_list' %}" class="btn btn-danger w-100">📄 Previous Papers</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Your Progress</h5>
+            </div>
+            <div class="card-body text-center">
+                <h1 class="display-4">{{ stats.quizzes_taken }}</h1>
+                <p>Quizzes Completed</p>
+                <hr>
+                <h3>{{ stats.avg_score|floatformat:0 }}%</h3>
+                <p>Average Score</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

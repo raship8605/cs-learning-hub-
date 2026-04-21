@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="text-center py-5 bg-light rounded">
+    <h1 class="display-4">Welcome to CS Learning Hub</h1>
+    <p class="lead">Your complete platform for Computer Science education</p>
+    {% if not user.is_authenticated %}
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Get Started</a>
+    {% else %}
+        <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+    {% endif %}
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-3 text-center">
+        <i class="fas fa-video fa-3x text-primary"></i>
+        <h4 class="mt-2">Video Lectures</h4>
+        <p>Learn from top YouTube tutorials</p>
+    </div>
+    <div class="col-md-3 text-center">
+        <i class="fas fa-file-alt fa-3x text-success"></i>
+        <h4 class="mt-2">Study Notes</h4>
+        <p>Download comprehensive notes</p>
+    </div>
+    <div class="col-md-3 text-center">
+        <i class="fas fa-question-circle fa-3x text-warning"></i>
+        <h4 class="mt-2">Practice Quizzes</h4>
+        <p>Test your knowledge</p>
+    </div>
+    <div class="col-md-3 text-center">
+        <i class="fas fa-file-pdf fa-3x text-danger"></i>
+        <h4 class="mt-2">Previous Papers</h4>
+        <p>Practice with past exams</p>
+    </div>
+</div>
+{% endblock %}

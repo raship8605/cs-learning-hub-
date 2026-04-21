@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">
+        <i class="fas fa-question-circle me-2"></i>Practice Quizzes
+    </h2>
+    
+    <!-- Language/Subject Selector -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-code me-2"></i>Select Programming Language</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2" id="subjectFilter">
+                <button class="btn btn-primary language-btn active" data-subject="all">
+                    <i class="fas fa-globe me-1"></i> All Subjects
+                </button>
+                {% for subject in subjects %}
+                    <button class="btn btn-outline-primary language-btn" data-subject="{{ subject.id }}">
+                        <i class="fas fa-tag me-1"></i> {{ subject.name }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Debug: Show if no subjects -->
+    {% if not subjects %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            No subjects found! Please add subjects in the admin panel.
+            <a href="/admin/learning_app/subject/add/" class="btn btn-sm btn-warning ms-3">Add Subjects</a>
+        </div>
+    {% endif %}
+    
+    <!-- Quizzes Grid -->
+    <div class="row" id="quizzesContainer">
+        {% for quiz in quizzes %}
+            <div class="col-md-6 col-lg-4 mb-4 quiz-item" data-subject="{{ quiz.subject.id }}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <span class="badge bg-primary mb-2">{{ quiz.subject.name }}</span>
+                        <h5 class="card-title">{{ quiz.title }}</h5>
+                        <p class="card-text text-muted small">{{ quiz.description|default:"Test your knowledge" }}</p>
+                        <hr>
+                        <div class="row text-center mb-3">
+                            <div class="col-6">
+                                <i class="fas fa-clock"></i>
+                                <small>{{ quiz.duration_minutes }} min</small>
+                            </div>
+                            <div class="col-6">
+                                <i class="fas fa-star"></i>
+                                <small>{{ quiz.passing_marks }}% to pass</small>
+                            </div>
+                        </div>
+                        
+                        {% with attempt=quiz.attempts.first %}
+                            {% if attempt %}
+                                <div class="alert alert-info small text-center">
+                                    <i class="fas fa-chart-line"></i> Score: {{ attempt.score }}/{{ attempt.total_marks }}
+                                    ({{ attempt.percentage|floatformat:0 }}%)
+                                </div>
+                                <a href="{% url 'quiz_result' attempt.id %}" class="btn btn-info w-100">
+                                    <i class="fas fa-chart-bar me-1"></i> View Result
+                                </a>
+                            {% else %}
+                                <a href="{% url 'take_quiz' quiz.id %}" class="btn btn-primary w-100">
+                                    <i class="fas fa-play me-1"></i> Start Quiz
+                                </a>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No quizzes available yet. 
+                    <a href="/admin/learning_app/quiz/add/" class="alert-link">Create your first quiz</a>
+                    in the admin panel!
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    // Filter functionality
+    const subjectBtns = document.querySelectorAll('#subjectFilter .language-btn');
+    const quizItems = document.querySelectorAll('.quiz-item');
+    
+    subjectBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Update active state
+            subjectBtns.forEach(b => b.classList.remove('active'));
+            subjectBtns.forEach(b => b.classList.remove('btn-primary'));
+            subjectBtns.forEach(b => b.classList.add('btn-outline-primary'));
+            this.classList.add('active');
+            this.classList.remove('btn-outline-primary');
+            this.classList.add('btn-primary');
+            
+            const subjectId = this.dataset.subject;
+            
+            // Filter quizzes
+            quizItems.forEach(item => {
+                if (subjectId === 'all' || item.dataset.subject === subjectId) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
