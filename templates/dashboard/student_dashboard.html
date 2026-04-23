@@ -1,92 +1,314 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2 class="mb-4">Welcome, {{ user.username }}! 👋</h2>
+<style>
+    /* Welcome Section */
+    .welcome-card {
+        background: linear-gradient(135deg, #2C3E50, #34495E);
+        color: white;
+        padding: 25px 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .welcome-card h2 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 500;
+    }
+    
+    .welcome-card p {
+        margin: 8px 0 0;
+        opacity: 0.85;
+    }
+    
+    /* Simple Stat Cards */
+    .stat-card {
+        background: white;
+        border: none;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .stat-icon {
+        font-size: 2rem;
+        color: #3498DB;
+        margin-bottom: 12px;
+    }
+    
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #2C3E50;
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+        color: #7F8C8D;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Section Cards */
+    .section-card {
+        background: white;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .section-header {
+        background: #F8F9FA;
+        padding: 15px 20px;
+        border-bottom: 1px solid #E9ECEF;
+    }
+    
+    .section-header h5 {
+        margin: 0;
+        font-weight: 600;
+        color: #2C3E50;
+    }
+    
+    .section-header i {
+        color: #3498DB;
+        margin-right: 8px;
+    }
+    
+    /* Activity Items */
+    .activity-item {
+        padding: 12px 20px;
+        border-bottom: 1px solid #F0F0F0;
+        transition: background 0.2s ease;
+    }
+    
+    .activity-item:hover {
+        background: #F8F9FA;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-icon {
+        width: 30px;
+        color: #3498DB;
+        display: inline-block;
+    }
+    
+    .activity-title {
+        font-weight: 500;
+        color: #2C3E50;
+    }
+    
+    .activity-time {
+        float: right;
+        color: #95A5A6;
+        font-size: 0.8rem;
+    }
+    
+    /* Quick Links */
+    .quick-link {
+        display: block;
+        padding: 12px 15px;
+        margin-bottom: 10px;
+        background: #F8F9FA;
+        border-radius: 10px;
+        color: #2C3E50;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .quick-link:hover {
+        background: #E9ECEF;
+        transform: translateX(5px);
+        color: #3498DB;
+    }
+    
+    .quick-link i {
+        width: 25px;
+        margin-right: 10px;
+        color: #3498DB;
+    }
+    
+    .quick-link:last-child {
+        margin-bottom: 0;
+    }
+    
+    /* Progress Stats */
+    .progress-stat {
+        text-align: center;
+        padding: 15px;
+    }
+    
+    .progress-stat i {
+        font-size: 1.8rem;
+        color: #3498DB;
+        margin-bottom: 10px;
+    }
+    
+    .progress-stat h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2C3E50;
+        margin-bottom: 5px;
+    }
+    
+    .progress-stat p {
+        font-size: 0.8rem;
+        color: #7F8C8D;
+        margin: 0;
+    }
+    
+    .divider {
+        border-right: 1px solid #E9ECEF;
+    }
+    
+    @media (max-width: 768px) {
+        .divider {
+            border-right: none;
+            border-bottom: 1px solid #E9ECEF;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+    }
+</style>
 
-<div class="row">
-    <div class="col-md-3 mb-3">
-        <div class="card text-center bg-primary text-white">
-            <div class="card-body">
-                <i class="fas fa-video fa-2x"></i>
-                <h3>{{ stats.videos_watched }}</h3>
-                <p>Videos Watched</p>
+<!-- Welcome Section -->
+<div class="welcome-card">
+    <h2>
+        <i class="fas fa-smile-wink me-2"></i>Welcome, {{ user.first_name|default:user.username }}!
+    </h2>
+    <p>Continue your learning journey. You're doing great!</p>
+</div>
+
+<!-- Statistics Cards - Simple White Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card text-center">
+            <div class="stat-icon">
+                <i class="fas fa-video"></i>
             </div>
+            <div class="stat-number">{{ stats.videos_watched }}</div>
+            <div class="stat-label">Videos Watched</div>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
-        <div class="card text-center bg-success text-white">
-            <div class="card-body">
-                <i class="fas fa-file-alt fa-2x"></i>
-                <h3>{{ stats.notes_downloaded }}</h3>
-                <p>Notes Downloaded</p>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card text-center">
+            <div class="stat-icon">
+                <i class="fas fa-file-alt"></i>
             </div>
+            <div class="stat-number">{{ stats.notes_downloaded }}</div>
+            <div class="stat-label">Notes Downloaded</div>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
-        <div class="card text-center bg-warning text-white">
-            <div class="card-body">
-                <i class="fas fa-question-circle fa-2x"></i>
-                <h3>{{ stats.quizzes_taken }}</h3>
-                <p>Quizzes Taken</p>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card text-center">
+            <div class="stat-icon">
+                <i class="fas fa-question-circle"></i>
             </div>
+            <div class="stat-number">{{ stats.quizzes_taken }}</div>
+            <div class="stat-label">Quizzes Taken</div>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
-        <div class="card text-center bg-info text-white">
-            <div class="card-body">
-                <i class="fas fa-chart-line fa-2x"></i>
-                <h3>{{ stats.avg_score|floatformat:0 }}%</h3>
-                <p>Average Score</p>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card text-center">
+            <div class="stat-icon">
+                <i class="fas fa-chart-line"></i>
             </div>
+            <div class="stat-number">{{ stats.avg_score|floatformat:0 }}%</div>
+            <div class="stat-label">Average Score</div>
         </div>
     </div>
 </div>
 
-<div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Recent Activity</h5>
+<div class="row g-4">
+    <!-- Recent Activity -->
+    <div class="col-lg-7">
+        <div class="section-card">
+            <div class="section-header">
+                <h5><i class="fas fa-history"></i> Recent Activity</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0">
                 {% for activity in recent_activities %}
-                    <div class="mb-2">
-                        <i class="fas fa-clock text-muted"></i>
-                        {{ activity.content_title }} - {{ activity.timestamp|timesince }} ago
+                    <div class="activity-item">
+                        <i class="fas fa-clock activity-icon"></i>
+                        <span class="activity-title">{{ activity.content_title }}</span>
+                        <span class="activity-time">{{ activity.timestamp|timesince }} ago</span>
                     </div>
                 {% empty %}
-                    <p>No activities yet. Start learning!</p>
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">No activities yet. Start learning!</p>
+                    </div>
                 {% endfor %}
             </div>
         </div>
     </div>
-</div>
 
-<div class="row mt-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Quick Links</h5>
+    <!-- Quick Links -->
+    <div class="col-lg-5">
+        <div class="section-card">
+            <div class="section-header">
+                <h5><i class="fas fa-bolt"></i> Quick Links</h5>
             </div>
             <div class="card-body">
-                <a href="{% url 'video_list' %}" class="btn btn-primary w-100 mb-2">📺 Watch Videos</a>
-                <a href="{% url 'notes_list' %}" class="btn btn-success w-100 mb-2">📚 Download Notes</a>
-                <a href="{% url 'quiz_list' %}" class="btn btn-warning w-100 mb-2">📝 Take Quiz</a>
-                <a href="{% url 'papers_list' %}" class="btn btn-danger w-100">📄 Previous Papers</a>
+                <a href="{% url 'video_list' %}" class="quick-link">
+                    <i class="fas fa-video"></i> Watch Videos
+                </a>
+                <a href="{% url 'notes_list' %}" class="quick-link">
+                    <i class="fas fa-file-alt"></i> Download Notes
+                </a>
+                <a href="{% url 'quiz_list' %}" class="quick-link">
+                    <i class="fas fa-question-circle"></i> Take Quiz
+                </a>
+                <a href="{% url 'papers_list' %}" class="quick-link">
+                    <i class="fas fa-file-pdf"></i> Previous Papers
+                </a>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Your Progress</h5>
+</div>
+
+<!-- Progress Summary -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="section-card">
+            <div class="section-header">
+                <h5><i class="fas fa-chart-pie"></i> Progress Summary</h5>
             </div>
-            <div class="card-body text-center">
-                <h1 class="display-4">{{ stats.quizzes_taken }}</h1>
-                <p>Quizzes Completed</p>
-                <hr>
-                <h3>{{ stats.avg_score|floatformat:0 }}%</h3>
-                <p>Average Score</p>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 divider">
+                        <div class="progress-stat">
+                            <i class="fas fa-video"></i>
+                            <h3>{{ stats.videos_watched }}</h3>
+                            <p>Videos Completed</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 divider">
+                        <div class="progress-stat">
+                            <i class="fas fa-file-alt"></i>
+                            <h3>{{ stats.notes_downloaded }}</h3>
+                            <p>Notes Downloaded</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="progress-stat">
+                            <i class="fas fa-trophy"></i>
+                            <h3>{{ stats.avg_score|floatformat:0 }}%</h3>
+                            <p>Average Score</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -2,95 +2,329 @@
 {% load static %}
 
 {% block content %}
-<div class="text-center py-5 bg-light rounded">
-    <h1 class="display-4">Welcome to CS Learning Hub</h1>
+<style>
+    /* ========================================
+       PROFESSIONAL COLOR THEME
+       Primary: #2C3E50 (Dark Navy)
+       Secondary: #3498DB (Bright Blue)
+       Accent: #E74C3C (Red)
+       Success: #27AE60 (Green)
+       Warning: #F39C12 (Orange)
+    ========================================== */
+    
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #2C3E50 0%, #3498DB 100%);
+        color: white;
+        padding: 80px 40px;
+        border-radius: 20px;
+        margin-bottom: 50px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 8s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.3; }
+        50% { transform: scale(1.1); opacity: 0.5; }
+    }
+    
+    .hero-section h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .hero-section p {
+        font-size: 1.2rem;
+        opacity: 0.95;
+        margin-bottom: 30px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .hero-btn {
+        background: #E74C3C;
+        color: white;
+        padding: 14px 40px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .hero-btn:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        color: white;
+    }
+    
+    /* Feature Cards */
+    .feature-card {
+        border: none;
+        border-radius: 20px;
+        background: white;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+    
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        transition: height 0.3s ease;
+    }
+    
+    .feature-card:nth-child(1)::before { background: #3498DB; }
+    .feature-card:nth-child(2)::before { background: #27AE60; }
+    .feature-card:nth-child(3)::before { background: #F39C12; }
+    .feature-card:nth-child(4)::before { background: #E74C3C; }
+    
+    .feature-card:hover::before {
+        height: 8px;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:nth-child(1) .feature-icon {
+        background: linear-gradient(135deg, #3498DB, #2980B9);
+        color: white;
+    }
+    
+    .feature-card:nth-child(2) .feature-icon {
+        background: linear-gradient(135deg, #27AE60, #229954);
+        color: white;
+    }
+    
+    .feature-card:nth-child(3) .feature-icon {
+        background: linear-gradient(135deg, #F39C12, #E67E22);
+        color: white;
+    }
+    
+    .feature-card:nth-child(4) .feature-icon {
+        background: linear-gradient(135deg, #E74C3C, #C0392B);
+        color: white;
+    }
+    
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1);
+    }
+    
+    .feature-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #2C3E50;
+    }
+    
+    .feature-desc {
+        color: #7F8C8D;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    .feature-link {
+        margin-top: 15px;
+        display: inline-block;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:nth-child(1) .feature-link { color: #3498DB; }
+    .feature-card:nth-child(2) .feature-link { color: #27AE60; }
+    .feature-card:nth-child(3) .feature-link { color: #F39C12; }
+    .feature-card:nth-child(4) .feature-link { color: #E74C3C; }
+    
+    .feature-link:hover {
+        transform: translateX(5px);
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+        color: white;
+        padding: 60px 40px;
+        border-radius: 20px;
+        text-align: center;
+        margin-top: 50px;
+    }
+    
+    .cta-section h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    
+    .cta-btn {
+        background: white;
+        color: #E74C3C;
+        padding: 12px 35px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+    }
+    
+    .cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        color: #C0392B;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-section h1 {
+            font-size: 2rem;
+        }
+        .hero-section {
+            padding: 50px 20px;
+        }
+        .cta-section h3 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-section text-center">
+    <h1>
+        <i class="fas fa-laptop-code me-3"></i>Welcome to CS Learning Hub
+    </h1>
     <p class="lead">Your complete platform for Computer Science education</p>
     {% if not user.is_authenticated %}
-        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Get Started</a>
+        <a href="{% url 'register' %}" class="btn hero-btn">
+            <i class="fas fa-rocket me-2"></i>Get Started Free
+        </a>
     {% else %}
-        <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+        <a href="{% url 'dashboard' %}" class="btn hero-btn">
+            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+        </a>
     {% endif %}
 </div>
 
-<div class="row mt-5">
-    <!-- Video Lectures - Clickable Card -->
-    <div class="col-md-3 text-center mb-4">
+<!-- Feature Cards -->
+<div class="row g-4">
+    <!-- Video Lectures -->
+    <div class="col-md-3 col-sm-6">
         <a href="{% url 'video_list' %}" class="text-decoration-none">
-            <div class="card h-100 shadow-sm hover-card">
-                <div class="card-body">
-                    <i class="fas fa-video fa-3x text-primary"></i>
-                    <h4 class="mt-2">Video Lectures</h4>
-                    <p class="text-muted">Learn from top YouTube tutorials</p>
+            <div class="card feature-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h4 class="feature-title">Video Lectures</h4>
+                    <p class="feature-desc">Learn from top YouTube tutorials curated by experts</p>
+                    <div class="feature-link">
+                        Watch Now <i class="fas fa-arrow-right ms-1"></i>
+                    </div>
                 </div>
             </div>
         </a>
     </div>
 
-    <!-- Study Notes - Clickable Card -->
-    <div class="col-md-3 text-center mb-4">
+    <!-- Study Notes -->
+    <div class="col-md-3 col-sm-6">
         <a href="{% url 'notes_list' %}" class="text-decoration-none">
-            <div class="card h-100 shadow-sm hover-card">
-                <div class="card-body">
-                    <i class="fas fa-file-alt fa-3x text-success"></i>
-                    <h4 class="mt-2">Study Notes</h4>
-                    <p class="text-muted">Download comprehensive notes</p>
+            <div class="card feature-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h4 class="feature-title">Study Notes</h4>
+                    <p class="feature-desc">Download comprehensive notes and study materials</p>
+                    <div class="feature-link">
+                        Download <i class="fas fa-arrow-right ms-1"></i>
+                    </div>
                 </div>
             </div>
         </a>
     </div>
 
-    <!-- Practice Quizzes - Clickable Card -->
-    <div class="col-md-3 text-center mb-4">
+    <!-- Practice Quizzes -->
+    <div class="col-md-3 col-sm-6">
         <a href="{% url 'quiz_list' %}" class="text-decoration-none">
-            <div class="card h-100 shadow-sm hover-card">
-                <div class="card-body">
-                    <i class="fas fa-question-circle fa-3x text-warning"></i>
-                    <h4 class="mt-2">Practice Quizzes</h4>
-                    <p class="text-muted">Test your knowledge</p>
+            <div class="card feature-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h4 class="feature-title">Practice Quizzes</h4>
+                    <p class="feature-desc">Test your knowledge with timed quizzes</p>
+                    <div class="feature-link">
+                        Take Quiz <i class="fas fa-arrow-right ms-1"></i>
+                    </div>
                 </div>
             </div>
         </a>
     </div>
 
-    <!-- Previous Papers - Clickable Card -->
-    <div class="col-md-3 text-center mb-4">
+    <!-- Previous Papers -->
+    <div class="col-md-3 col-sm-6">
         <a href="{% url 'papers_list' %}" class="text-decoration-none">
-            <div class="card h-100 shadow-sm hover-card">
-                <div class="card-body">
-                    <i class="fas fa-file-pdf fa-3x text-danger"></i>
-                    <h4 class="mt-2">Previous Papers</h4>
-                    <p class="text-muted">Practice with past exams</p>
+            <div class="card feature-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h4 class="feature-title">Previous Papers</h4>
+                    <p class="feature-desc">Practice with real exam papers from past years</p>
+                    <div class="feature-link">
+                        Download <i class="fas fa-arrow-right ms-1"></i>
+                    </div>
                 </div>
             </div>
         </a>
     </div>
 </div>
 
-<style>
-    .hover-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        cursor: pointer;
-        border: none;
-        border-radius: 15px;
-    }
-    
-    .hover-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-    
-    .hover-card .card-body {
-        padding: 25px;
-    }
-    
-    .hover-card i {
-        margin-bottom: 15px;
-        display: inline-block;
-    }
-    
-    .text-decoration-none {
-        display: block;
-        height: 100%;
-    }
-</style>
+<!-- CTA Section (Only for non-logged in users) -->
+{% if not user.is_authenticated %}
+<div class="cta-section">
+    <h3>Ready to Start Your Learning Journey?</h3>
+    <p>Join thousands of students learning computer science with us</p>
+    <a href="{% url 'register' %}" class="btn cta-btn">
+        <i class="fas fa-user-plus me-2"></i>Create Free Account
+    </a>
+</div>
+{% endif %}
+
 {% endblock %}

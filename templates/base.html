@@ -3,17 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS Learning Hub</title>
+    <title>{% block title %}CS Learning Hub{% endblock %}</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ========================================
+           PROFESSIONAL COLOR THEME
+           Primary: #2C3E50 (Dark Navy)
+           Secondary: #3498DB (Bright Blue)
+           Accent: #E74C3C (Red)
+           Success: #27AE60 (Green)
+        ========================================== */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* ========== NAVBAR STYLING ========== */
+        .navbar {
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            padding: 15px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand i {
+            color: #3498DB;
+            margin-right: 10px;
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            margin: 0 5px;
+            padding: 8px 16px !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(52, 152, 219, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            color: #3498DB !important;
+            background: rgba(52, 152, 219, 0.15);
+        }
+        
+        /* Login Button Styling */
+        .btn-login {
+            background: transparent;
+            border: 2px solid #3498DB;
+            color: white !important;
+            padding: 6px 20px !important;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-login:hover {
+            background: #3498DB;
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        /* Register Button Styling */
+        .btn-register {
+            background: linear-gradient(135deg, #E74C3C, #C0392B);
+            border: none;
+            color: white !important;
+            padding: 6px 20px !important;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+        /* Logout Button */
+        .btn-logout {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #E74C3C;
+            color: #E74C3C !important;
+            padding: 6px 20px !important;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-logout:hover {
+            background: #E74C3C;
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        
+        /* ========== FOOTER STYLING - SMALLER ========== */
+        footer {
+            background: linear-gradient(135deg, #2C3E50 0%, #1a252f 100%);
+            color: rgba(255,255,255,0.8);
+            padding: 25px 0 15px;
+            margin-top: 40px;
+        }
+        
+        .footer-title {
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            position: relative;
+            padding-bottom: 8px;
+        }
+        
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: #3498DB;
+            border-radius: 2px;
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 6px;
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+        
+        .footer-links a:hover {
+            color: #3498DB;
+            padding-left: 3px;
+        }
+        
+        .footer-links i {
+            width: 20px;
+            margin-right: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .social-icons {
+            margin-top: 10px;
+        }
+        
+        .social-icons a {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 8px;
+            color: white;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+        
+        .social-icons a:hover {
+            background: #3498DB;
+            transform: translateY(-2px);
+        }
+        
+        .footer-text {
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 12px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+        
+        /* Message Alerts */
+        .alert {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #27AE60, #229954);
+            color: white;
+        }
+        
+        .alert-error {
+            background: linear-gradient(135deg, #E74C3C, #C0392B);
+            color: white;
+        }
+        
+        .alert-warning {
+            background: linear-gradient(135deg, #F39C12, #E67E22);
+            color: white;
+        }
+        
+        .alert-info {
+            background: linear-gradient(135deg, #3498DB, #2980B9);
+            color: white;
+        }
+        
+        .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        /* Responsive */
+        @media (max-width: 991px) {
+            .nav-link {
+                margin: 5px 0;
+                text-align: center;
+            }
+            .btn-login, .btn-register, .btn-logout {
+                display: inline-block;
+                width: auto;
+                margin: 5px auto;
+                text-align: center;
+            }
+        }
+        
+        main {
+            flex: 1;
+        }
+        
+        /* Extra gap between cards and footer */
+        .content-wrapper {
+            min-height: calc(100vh - 200px);
+        }
+    </style>
 </head>
 <body>
+
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="{% url 'index' %}">
                 <i class="fas fa-laptop-code"></i> CS Learning Hub
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -23,26 +286,50 @@
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                            <a class="nav-link" href="{% url 'dashboard' %}">
+                                <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'video_list' %}">Videos</a>
+                            <a class="nav-link" href="{% url 'video_list' %}">
+                                <i class="fas fa-video me-1"></i> Videos
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'notes_list' %}">Notes</a>
+                            <a class="nav-link" href="{% url 'notes_list' %}">
+                                <i class="fas fa-file-alt me-1"></i> Notes
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'quiz_list' %}">Quizzes</a>
+                            <a class="nav-link" href="{% url 'quiz_list' %}">
+                                <i class="fas fa-question-circle me-1"></i> Quizzes
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                            <a class="nav-link" href="{% url 'papers_list' %}">
+                                <i class="fas fa-file-pdf me-1"></i> Papers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'my_progress' %}">
+                                <i class="fas fa-chart-line me-1"></i> Progress
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn-logout" href="{% url 'logout' %}">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
+                            </a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                            <a class="nav-link btn-login" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn btn-light text-primary" href="{% url 'register' %}">Register</a>
+                            <a class="nav-link btn-register" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus me-1"></i> Register
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
@@ -54,7 +341,8 @@
     {% if messages %}
         <div class="container mt-3">
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
                     {{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
@@ -68,12 +356,68 @@
         {% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-        <p>&copy; 2024 CS Learning Hub. All rights reserved.</p>
+    <!-- Footer - Smaller Version -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5 mb-3">
+                    <h5 class="footer-title">
+                        <i class="fas fa-laptop-code me-2"></i>CS Learning Hub
+                    </h5>
+                    <p class="footer-text">Empowering CS students with quality learning resources and interactive assessments.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h5 class="footer-title">Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'video_list' %}"><i class="fas fa-video"></i> Video Lectures</a></li>
+                        <li><a href="{% url 'notes_list' %}"><i class="fas fa-file-alt"></i> Study Notes</a></li>
+                        <li><a href="{% url 'quiz_list' %}"><i class="fas fa-question-circle"></i> Practice Quizzes</a></li>
+                        <li><a href="{% url 'papers_list' %}"><i class="fas fa-file-pdf"></i> Previous Papers</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5 class="footer-title">Contact</h5>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope me-2"></i> support@cshub.com</li>
+                        <li><i class="fas fa-phone me-2"></i> +91 12345 67890</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CS Learning Hub. All rights reserved. | Built with <i class="fas fa-heart text-danger"></i> for CS Students</p>
+            </div>
+        </div>
     </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Add active class to current nav link
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href !== '#' && href !== '/') {
+                    if (currentPath === href || (href !== '/' && currentPath.startsWith(href))) {
+                        link.classList.add('active');
+                    }
+                }
+                if (href === '/' && currentPath === '/') {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
