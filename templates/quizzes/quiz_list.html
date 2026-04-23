@@ -2,23 +2,136 @@
 {% load static %}
 
 {% block content %}
-<div class="container py-4">
-    <h2 class="mb-4">
-        <i class="fas fa-question-circle me-2"></i>Practice Quizzes
-    </h2>
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+    }
     
-    <!-- Language/Subject Selector -->
-    <div class="card mb-4">
+    .quiz-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .quiz-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .subject-badge {
+        background: #667eea;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    
+    .btn-start {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        border-radius: 25px;
+        padding: 10px;
+        font-weight: bold;
+        width: 100%;
+    }
+    
+    .btn-retake {
+        background: linear-gradient(135deg, #ffc107, #ff9800);
+        border: none;
+        border-radius: 25px;
+        padding: 10px;
+        font-weight: bold;
+        color: #333;
+        width: 100%;
+    }
+    
+    .btn-retake:hover {
+        color: #333;
+        opacity: 0.9;
+    }
+    
+    .btn-result {
+        background: linear-gradient(135deg, #17a2b8, #6f42c1);
+        border: none;
+        border-radius: 25px;
+        padding: 10px;
+        font-weight: bold;
+        color: white;
+        width: 100%;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+    
+    .btn-result:hover {
+        color: white;
+        opacity: 0.9;
+    }
+    
+    .passed-badge {
+        background: #28a745;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+    }
+    
+    .failed-badge {
+        background: #dc3545;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+    }
+    
+    .filter-btn {
+        margin: 5px;
+        border-radius: 25px;
+        padding: 8px 20px;
+    }
+    
+    .filter-btn.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: #f8f9fa;
+        border-radius: 20px;
+    }
+</style>
+
+<div class="container py-4">
+    <!-- Hero Section -->
+    <div class="hero-section text-center">
+        <h1 class="display-5 mb-3">
+            <i class="fas fa-question-circle me-3"></i>Practice Quizzes
+        </h1>
+        <p class="lead mb-0">Test your knowledge and track your progress</p>
+    </div>
+    
+    <!-- Subject Filter -->
+    <div class="card mb-4 shadow-sm">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0"><i class="fas fa-code me-2"></i>Select Programming Language</h5>
         </div>
         <div class="card-body">
-            <div class="d-flex flex-wrap gap-2" id="subjectFilter">
-                <button class="btn btn-primary language-btn active" data-subject="all">
+            <div class="d-flex flex-wrap" id="subjectFilter">
+                <button class="btn btn-primary filter-btn active" data-subject="all">
                     <i class="fas fa-globe me-1"></i> All Subjects
                 </button>
                 {% for subject in subjects %}
-                    <button class="btn btn-outline-primary language-btn" data-subject="{{ subject.id }}">
+                    <button class="btn btn-outline-primary filter-btn" data-subject="{{ subject.id }}">
                         <i class="fas fa-tag me-1"></i> {{ subject.name }}
                     </button>
                 {% endfor %}
@@ -26,48 +139,69 @@
         </div>
     </div>
     
-    <!-- Debug: Show if no subjects -->
-    {% if not subjects %}
-        <div class="alert alert-warning">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            No subjects found! Please add subjects in the admin panel.
-            <a href="/admin/learning_app/subject/add/" class="btn btn-sm btn-warning ms-3">Add Subjects</a>
-        </div>
-    {% endif %}
-    
     <!-- Quizzes Grid -->
     <div class="row" id="quizzesContainer">
         {% for quiz in quizzes %}
             <div class="col-md-6 col-lg-4 mb-4 quiz-item" data-subject="{{ quiz.subject.id }}">
-                <div class="card h-100 shadow-sm">
+                <div class="card quiz-card h-100 shadow-sm">
                     <div class="card-body">
-                        <span class="badge bg-primary mb-2">{{ quiz.subject.name }}</span>
-                        <h5 class="card-title">{{ quiz.title }}</h5>
-                        <p class="card-text text-muted small">{{ quiz.description|default:"Test your knowledge" }}</p>
-                        <hr>
-                        <div class="row text-center mb-3">
-                            <div class="col-6">
-                                <i class="fas fa-clock"></i>
-                                <small>{{ quiz.duration_minutes }} min</small>
-                            </div>
-                            <div class="col-6">
-                                <i class="fas fa-star"></i>
-                                <small>{{ quiz.passing_marks }}% to pass</small>
+                        <span class="subject-badge">
+                            <i class="fas fa-folder-open me-1"></i> {{ quiz.subject.name }}
+                        </span>
+                        <h5 class="card-title mt-2">{{ quiz.title }}</h5>
+                        <p class="card-text text-muted small">{{ quiz.description|default:"Test your knowledge with this quiz"|truncatewords:15 }}</p>
+                        
+                        <div class="bg-light rounded p-2 mb-3">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <i class="fas fa-clock text-primary"></i>
+                                    <div><small>{{ quiz.duration_minutes }} min</small></div>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-question-circle text-primary"></i>
+                                    <div><small>{{ quiz.questions.count }} Qs</small></div>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <div><small>{{ quiz.passing_marks }}% Pass</small></div>
+                                </div>
                             </div>
                         </div>
                         
                         {% with attempt=quiz.attempts.first %}
                             {% if attempt %}
-                                <div class="alert alert-info small text-center">
-                                    <i class="fas fa-chart-line"></i> Score: {{ attempt.score }}/{{ attempt.total_marks }}
+                                <!-- Quiz Already Attempted -->
+                                <div class="alert alert-info small text-center mb-2 p-2">
+                                    <i class="fas fa-chart-line me-1"></i>
+                                    <strong>Your Score:</strong> {{ attempt.score }}/{{ attempt.total_marks }} 
                                     ({{ attempt.percentage|floatformat:0 }}%)
+                                    {% if attempt.passed %}
+                                        <span class="passed-badge ms-1"><i class="fas fa-check me-1"></i>Passed</span>
+                                    {% else %}
+                                        <span class="failed-badge ms-1"><i class="fas fa-times me-1"></i>Failed</span>
+                                    {% endif %}
                                 </div>
-                                <a href="{% url 'quiz_result' attempt.id %}" class="btn btn-info w-100">
-                                    <i class="fas fa-chart-bar me-1"></i> View Result
-                                </a>
+                                
+                                <div class="d-grid gap-2">
+                                    {% if attempt.passed %}
+                                        <!-- Passed: Show View Result button only (no retake) -->
+                                        <a href="{% url 'quiz_result' attempt.id %}" class="btn-result">
+                                            <i class="fas fa-chart-bar me-2"></i> View Result
+                                        </a>
+                                    {% else %}
+                                        <!-- Failed: Show Retake button AND View Result button -->
+                                        <a href="{% url 'retake_quiz' quiz.id %}" class="btn-retake">
+                                            <i class="fas fa-redo me-2"></i> Retake Quiz (Failed)
+                                        </a>
+                                        <a href="{% url 'quiz_result' attempt.id %}" class="btn-result mt-2">
+                                            <i class="fas fa-chart-bar me-2"></i> View Previous Result
+                                        </a>
+                                    {% endif %}
+                                </div>
                             {% else %}
-                                <a href="{% url 'take_quiz' quiz.id %}" class="btn btn-primary w-100">
-                                    <i class="fas fa-play me-1"></i> Start Quiz
+                                <!-- Not Attempted Yet -->
+                                <a href="{% url 'take_quiz' quiz.id %}" class="btn-start btn btn-primary">
+                                    <i class="fas fa-play me-2"></i> Start Quiz
                                 </a>
                             {% endif %}
                         {% endwith %}
@@ -76,11 +210,10 @@
             </div>
         {% empty %}
             <div class="col-12">
-                <div class="alert alert-info text-center">
-                    <i class="fas fa-info-circle me-2"></i>
-                    No quizzes available yet. 
-                    <a href="/admin/learning_app/quiz/add/" class="alert-link">Create your first quiz</a>
-                    in the admin panel!
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <h4>No Quizzes Available</h4>
+                    <p class="text-muted">Check back later for new quizzes!</p>
                 </div>
             </div>
         {% endfor %}
@@ -89,30 +222,39 @@
 
 <script>
     // Filter functionality
-    const subjectBtns = document.querySelectorAll('#subjectFilter .language-btn');
-    const quizItems = document.querySelectorAll('.quiz-item');
+    var subjectBtns = document.querySelectorAll('#subjectFilter .filter-btn');
+    var quizItems = document.querySelectorAll('.quiz-item');
     
-    subjectBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Update active state
-            subjectBtns.forEach(b => b.classList.remove('active'));
-            subjectBtns.forEach(b => b.classList.remove('btn-primary'));
-            subjectBtns.forEach(b => b.classList.add('btn-outline-primary'));
+    function filterQuizzes() {
+        var activeBtn = document.querySelector('#subjectFilter .filter-btn.active');
+        var subjectId = activeBtn ? activeBtn.getAttribute('data-subject') : 'all';
+        
+        for (var i = 0; i < quizItems.length; i++) {
+            var item = quizItems[i];
+            var itemSubject = item.getAttribute('data-subject');
+            
+            if (subjectId === 'all' || itemSubject === subjectId) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        }
+    }
+    
+    for (var i = 0; i < subjectBtns.length; i++) {
+        subjectBtns[i].addEventListener('click', function() {
+            for (var j = 0; j < subjectBtns.length; j++) {
+                subjectBtns[j].classList.remove('active');
+                subjectBtns[j].classList.remove('btn-primary');
+                subjectBtns[j].classList.add('btn-outline-primary');
+            }
             this.classList.add('active');
             this.classList.remove('btn-outline-primary');
             this.classList.add('btn-primary');
-            
-            const subjectId = this.dataset.subject;
-            
-            // Filter quizzes
-            quizItems.forEach(item => {
-                if (subjectId === 'all' || item.dataset.subject === subjectId) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+            filterQuizzes();
         });
-    });
+    }
+    
+    filterQuizzes();
 </script>
 {% endblock %}

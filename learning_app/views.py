@@ -192,24 +192,54 @@ def quiz_list(request):
 def take_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
     
-    # Check if already attempted
-    if QuizAttempt.objects.filter(student=request.user, quiz=quiz).exists():
-        messages.warning(request, 'You have already taken this quiz!')
-        return redirect('quiz_list')
+    # Check if already attempted and PASSED
+    existing_attempt = QuizAttempt.objects.filter(student=request.user, quiz=quiz).first()
+    
+    if existing_attempt and existing_attempt.passed:
+        context = {
+            'quiz': quiz,
+            'already_attempted': True,
+            'retake_allowed': False,
+            'attempt_result': existing_attempt,
+        }
+        return render(request, 'quizzes/take_quiz.html', context)
+    
+    # If failed attempt exists, allow retake with message
+    retake_message = None
+    if existing_attempt and not existing_attempt.passed:
+        existing_attempt.delete()
+        retake_message = f'You previously failed this quiz. Take it again to improve your score!'
     
     if request.method == 'POST':
         score = 0
         total_marks = 0
         
+        # Debug: Print all POST data
+        print("POST Data:", request.POST)
+        
         for question in quiz.questions.all():
             selected_answer = request.POST.get(f'q{question.id}')
-            if selected_answer == question.correct_answer:
+            correct = question.correct_answer
+            
+            # Debug: Print each question comparison
+            print(f"Question {question.id}: Selected={selected_answer}, Correct={correct}, Match={selected_answer == correct}")
+            
+            if selected_answer and selected_answer.upper() == correct.upper():
                 score += 1
             total_marks += 1
         
-        percentage = (score / total_marks) * 100 if total_marks > 0 else 0
+        # Calculate percentage
+        if total_marks > 0:
+            percentage = (score / total_marks) * 100
+        else:
+            percentage = 0
+            
         passed = percentage >= quiz.passing_marks
         
+        # Debug: Print final score
+        print(f"Final Score: {score}/{total_marks}, Percentage: {percentage}%, Passed: {passed}")
+        
+        # Save attempt
         attempt = QuizAttempt.objects.create(
             student=request.user,
             quiz=quiz,
@@ -219,24 +249,50 @@ def take_quiz(request, quiz_id):
             passed=passed
         )
         
-        UserActivity.objects.create(
-            user=request.user,
-            activity_type='quiz_taken',
-            content_type='quiz',
-            content_id=quiz.id,
-            content_title=quiz.title
-        )
-        
-        messages.success(request, f'Quiz submitted! Your score: {score}/{total_marks}')
+        messages.success(request, f'Quiz submitted! Your score: {score}/{total_marks} ({percentage:.1f}%)')
         return redirect('quiz_result', attempt_id=attempt.id)
     
     questions = quiz.questions.all()
     context = {
         'quiz': quiz,
         'questions': questions,
+        'already_attempted': False,
+        'retake_message': retake_message,
     }
     return render(request, 'quizzes/take_quiz.html', context)
 
+@login_required
+def retake_quiz(request, quiz_id):
+    """Allow student to retake a failed quiz"""
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    
+    # Check if there's a failed attempt
+    failed_attempt = QuizAttempt.objects.filter(student=request.user, quiz=quiz, passed=False).first()
+    
+    if not failed_attempt:
+        messages.warning(request, 'You cannot retake this quiz. Either you passed it or never took it.')
+        return redirect('quiz_list')
+    
+    # Delete the failed attempt to allow retake
+    failed_attempt.delete()
+    messages.info(request, f'Retaking "{quiz.title}". Good luck!')
+    
+    return redirect('take_quiz', quiz_id=quiz_id)
+
+@login_required
+def quiz_list(request):
+    quizzes = Quiz.objects.filter(is_active=True)
+    subjects = Subject.objects.all()
+    
+    # Add attempt info for each quiz
+    for quiz in quizzes:
+        quiz.attempts = QuizAttempt.objects.filter(student=request.user, quiz=quiz)
+    
+    context = {
+        'quizzes': quizzes,
+        'subjects': subjects,
+    }
+    return render(request, 'quizzes/quiz_list.html', context)
 # Quiz Result
 @login_required
 def quiz_result(request, attempt_id):
@@ -247,26 +303,39 @@ def quiz_result(request, attempt_id):
 @login_required
 def papers_list(request):
     subject_id = request.GET.get('subject')
+    search_query = request.GET.get('search')
+    year = request.GET.get('year')
+    semester = request.GET.get('semester')
+    
     papers = PreviousYearPaper.objects.all()
     
     if subject_id:
         papers = papers.filter(subject_id=subject_id)
+    if search_query:
+        papers = papers.filter(Q(title__icontains=search_query))
+    if year:
+        papers = papers.filter(year=year)
+    if semester:
+        papers = papers.filter(semester=semester)
     
     subjects = Subject.objects.all()
+    years = PreviousYearPaper.objects.values_list('year', flat=True).distinct().order_by('-year')
+    
     context = {
         'papers': papers,
         'subjects': subjects,
+        'years': years,
         'selected_subject': subject_id,
     }
     return render(request, 'papers/papers_list.html', context)
 
-# Download Paper
 @login_required
 def download_paper(request, paper_id):
     paper = get_object_or_404(PreviousYearPaper, id=paper_id)
     paper.downloads += 1
     paper.save()
     
+    # Log activity
     UserActivity.objects.get_or_create(
         user=request.user,
         activity_type='paper_download',
@@ -275,8 +344,7 @@ def download_paper(request, paper_id):
         defaults={'content_title': paper.title}
     )
     
-    return HttpResponseRedirect(paper.file.url)
-
+    return redirect(paper.file.url)
 # My Progress
 @login_required
 def my_progress(request):

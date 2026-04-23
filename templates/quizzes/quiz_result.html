@@ -2,43 +2,229 @@
 {% load static %}
 
 {% block content %}
+<style>
+    .result-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .result-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .score-circle {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: -90px auto 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .score-percentage {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+    
+    .score-label {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .stat-card {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        transition: transform 0.3s;
+        height: 100%;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+    
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .pass-badge {
+        display: inline-block;
+        padding: 10px 30px;
+        border-radius: 50px;
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-top: 20px;
+    }
+    
+    .pass-badge.passed {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+    }
+    
+    .pass-badge.failed {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+    
+    .details-section {
+        padding: 30px;
+    }
+    
+    .question-review {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .question-review.correct {
+        border-left: 5px solid #28a745;
+    }
+    
+    .question-review.incorrect {
+        border-left: 5px solid #dc3545;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+    
+    .btn-custom {
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+    
+    .btn-custom:hover {
+        transform: scale(1.05);
+    }
+    
+    @media (max-width: 768px) {
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            margin-top: -70px;
+        }
+        .score-percentage {
+            font-size: 2rem;
+        }
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+
 <div class="container py-4">
-    <div class="card text-center">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">Quiz Results</h3>
+    <div class="result-card">
+        <!-- Header -->
+        <div class="result-header">
+            <h2 class="mb-2">
+                <i class="fas fa-chart-line me-2"></i>Quiz Results
+            </h2>
+            <p class="mb-0">Here's how you performed</p>
         </div>
-        <div class="card-body">
-            <h4>{{ attempt.quiz.title }}</h4>
-            <p class="text-muted">{{ attempt.quiz.subject.name }}</p>
-            
-            <div class="display-1 my-4">
-                {{ attempt.percentage|floatformat:0 }}%
+        
+        <!-- Score Circle -->
+        <div class="score-circle">
+            <div class="text-center">
+                <div class="score-percentage">{{ attempt.percentage|floatformat:0 }}<span style="font-size: 1.5rem;">%</span></div>
+                <div class="score-label">Overall Score</div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="details-section">
+            <!-- Quiz Info -->
+            <div class="text-center mb-4">
+                <h3>{{ attempt.quiz.title }}</h3>
+                <p class="text-muted">
+                    <i class="fas fa-folder-open me-1"></i> {{ attempt.quiz.subject.name }}
+                    <span class="mx-2">•</span>
+                    <i class="fas fa-calendar me-1"></i> {{ attempt.attempted_at|date:"F j, Y, g:i a" }}
+                </p>
             </div>
             
-            <div class="row mt-4">
-                <div class="col-md-4">
-                    <div class="alert alert-info">
-                        <strong>Your Score</strong>
-                        <h3>{{ attempt.score }}/{{ attempt.total_marks }}</h3>
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <i class="fas fa-star fa-2x text-warning"></i>
+                        <div class="stat-value">{{ attempt.score }}/{{ attempt.total_marks }}</div>
+                        <div class="stat-label">Your Score</div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="alert alert-warning">
-                        <strong>Passing Marks</strong>
-                        <h3>{{ attempt.quiz.passing_marks }}%</h3>
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <i class="fas fa-bullseye fa-2x text-primary"></i>
+                        <div class="stat-value">{{ attempt.quiz.passing_marks }}%</div>
+                        <div class="stat-label">Passing Marks</div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="alert {% if attempt.passed %}alert-success{% else %}alert-danger{% endif %}">
-                        <strong>Status</strong>
-                        <h3>{% if attempt.passed %}PASSED{% else %}FAILED{% endif %}</h3>
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <i class="fas fa-chart-simple fa-2x text-info"></i>
+                        <div class="stat-value">{{ attempt.percentage|floatformat:1 }}%</div>
+                        <div class="stat-label">Percentage</div>
                     </div>
                 </div>
             </div>
             
-            <a href="{% url 'quiz_list' %}" class="btn btn-primary mt-3">
-                <i class="fas fa-list me-2"></i> Back to Quizzes
-            </a>
+            <!-- Pass/Fail Badge -->
+            <div class="text-center">
+                <div class="pass-badge {% if attempt.passed %}passed{% else %}failed{% endif %}">
+                    <i class="fas {% if attempt.passed %}fa-check-circle{% else %}fa-times-circle{% endif %} me-2"></i>
+                    {% if attempt.passed %}PASSED{% else %}FAILED{% endif %}
+                </div>
+            </div>
+            
+            <!-- Message based on result -->
+            <div class="text-center mt-4">
+                {% if attempt.passed %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-trophy me-2"></i>
+                        Congratulations! You have successfully passed the quiz.
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-book-open me-2"></i>
+                        Better luck next time! Review the material and try again.
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="{% url 'quiz_list' %}" class="btn btn-primary btn-custom">
+                    <i class="fas fa-list me-2"></i> All Quizzes
+                </a>
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-primary btn-custom">
+                    <i class="fas fa-chart-line me-2"></i> My Progress
+                </a>
+            </div>
         </div>
     </div>
 </div>

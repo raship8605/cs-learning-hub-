@@ -16,14 +16,12 @@
         border-radius: 15px;
         padding: 15px 25px;
         text-align: center;
-        backdrop-filter: blur(10px);
     }
     
     .timer-display {
         font-size: 2.5rem;
         font-weight: bold;
         font-family: monospace;
-        letter-spacing: 2px;
     }
     
     .question-card {
@@ -32,11 +30,6 @@
         padding: 25px;
         margin-bottom: 20px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        transition: all 0.3s;
-    }
-    
-    .question-card:hover {
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
     }
     
     .question-number {
@@ -52,32 +45,41 @@
         font-weight: bold;
     }
     
+    /* FIXED: Radio button styling - visible and clickable */
     .option-wrapper {
-        margin-bottom: 10px;
-    }
-    
-    .option-input {
-        display: none;
-    }
-    
-    .option-label {
-        cursor: pointer;
-        padding: 12px 15px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
         border-radius: 10px;
+        cursor: pointer;
         transition: all 0.3s;
-        border: 2px solid #e0e0e0;
-        display: block;
     }
     
-    .option-label:hover {
+    .option-wrapper:hover {
         background: #f8f9fa;
         border-color: #007bff;
     }
     
-    .option-input:checked + .option-label {
+    .option-wrapper.selected {
         background: #e7f1ff;
         border-color: #007bff;
-        font-weight: 500;
+    }
+    
+    /* FIXED: Radio button visible */
+    .option-radio {
+        margin-right: 15px;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: #007bff;
+    }
+    
+    .option-text {
+        flex: 1;
+        cursor: pointer;
+        font-size: 1rem;
     }
     
     .progress-bar-custom {
@@ -91,17 +93,82 @@
         height: 100%;
         background: linear-gradient(90deg, #007bff, #6610f2);
         border-radius: 4px;
+        width: 0%;
         transition: width 0.3s;
     }
     
-    .btn-warning, .btn-secondary {
-        border-radius: 50px;
+    .disabled-quiz {
+        text-align: center;
+        padding: 60px 20px;
+        background: #f8f9fa;
+        border-radius: 20px;
+    }
+    
+    .btn-submit {
+        background: #ffc107;
+        color: #333;
         padding: 12px 30px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
         font-weight: bold;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    
+    .btn-reset {
+        background: #6c757d;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    
+    .btn-submit:hover, .btn-reset:hover {
+        opacity: 0.9;
+        transform: scale(1.02);
+    }
+    
+    .retake-message {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 10px;
     }
 </style>
 
+{% if already_attempted and not retake_allowed %}
+<!-- Quiz Already Passed - CANNOT REATTEMPT -->
 <div class="container py-4">
+    <div class="disabled-quiz">
+        <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+        <h3>You have already passed this quiz!</h3>
+        <p class="text-muted">You cannot reattempt a quiz you have already passed.</p>
+        <a href="{% url 'quiz_list' %}" class="btn-submit" style="text-decoration: none; display: inline-block;">
+            <i class="fas fa-arrow-left me-2"></i>Back to Quizzes
+        </a>
+        {% if attempt_result %}
+        <a href="{% url 'quiz_result' attempt_result.id %}" class="btn-reset" style="text-decoration: none; display: inline-block;">
+            <i class="fas fa-chart-bar me-2"></i>View Your Result
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+
+<div class="container py-4">
+    <!-- Retake Message for Failed Quiz -->
+    {% if retake_message %}
+    <div class="retake-message">
+        <i class="fas fa-redo text-warning me-2"></i>
+        <strong>{{ retake_message }}</strong>
+    </div>
+    {% endif %}
+    
     <!-- Quiz Header -->
     <div class="quiz-header">
         <div class="row align-items-center">
@@ -124,7 +191,7 @@
     
     <!-- Progress Bar -->
     <div class="progress-bar-custom">
-        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        <div class="progress-fill" id="progressFill"></div>
     </div>
     
     <!-- Quiz Form -->
@@ -133,48 +200,55 @@
         <input type="hidden" name="quiz_id" value="{{ quiz.id }}">
         
         {% for question in questions %}
-            <div class="question-card" data-question="{{ forloop.counter0 }}">
-                <div class="d-flex align-items-center mb-3">
-                    <span class="question-number">{{ forloop.counter }}</span>
-                    <h5 class="mb-0">Question {{ forloop.counter }} of {{ questions|length }}</h5>
+        <div class="question-card" id="question-card-{{ question.id }}">
+            <div class="d-flex align-items-center mb-3">
+                <span class="question-number">{{ forloop.counter }}</span>
+                <h5 class="mb-0">Question {{ forloop.counter }} of {{ questions|length }}</h5>
+            </div>
+            
+            <p class="fs-5 mb-4">{{ question.question_text }}</p>
+            
+            <div class="options">
+                <!-- Option A -->
+                <div class="option-wrapper" data-question="{{ question.id }}" data-value="A">
+                    <input type="radio" name="q{{ question.id }}" value="A" id="q{{ question.id }}_a" class="option-radio">
+                    <label for="q{{ question.id }}_a" class="option-text">
+                        <strong>A.</strong> {{ question.option_a }}
+                    </label>
                 </div>
                 
-                <p class="fs-5 mb-4">{{ question.question_text }}</p>
+                <!-- Option B -->
+                <div class="option-wrapper" data-question="{{ question.id }}" data-value="B">
+                    <input type="radio" name="q{{ question.id }}" value="B" id="q{{ question.id }}_b" class="option-radio">
+                    <label for="q{{ question.id }}_b" class="option-text">
+                        <strong>B.</strong> {{ question.option_b }}
+                    </label>
+                </div>
                 
-                <div class="options">
-                    <div class="option-wrapper">
-                        <input type="radio" name="q{{ question.id }}" value="A" id="q{{ question.id }}_a" class="option-input">
-                        <label for="q{{ question.id }}_a" class="option-label">
-                            <strong>A.</strong> {{ question.option_a }}
-                        </label>
-                    </div>
-                    <div class="option-wrapper">
-                        <input type="radio" name="q{{ question.id }}" value="B" id="q{{ question.id }}_b" class="option-input">
-                        <label for="q{{ question.id }}_b" class="option-label">
-                            <strong>B.</strong> {{ question.option_b }}
-                        </label>
-                    </div>
-                    <div class="option-wrapper">
-                        <input type="radio" name="q{{ question.id }}" value="C" id="q{{ question.id }}_c" class="option-input">
-                        <label for="q{{ question.id }}_c" class="option-label">
-                            <strong>C.</strong> {{ question.option_c }}
-                        </label>
-                    </div>
-                    <div class="option-wrapper">
-                        <input type="radio" name="q{{ question.id }}" value="D" id="q{{ question.id }}_d" class="option-input">
-                        <label for="q{{ question.id }}_d" class="option-label">
-                            <strong>D.</strong> {{ question.option_d }}
-                        </label>
-                    </div>
+                <!-- Option C -->
+                <div class="option-wrapper" data-question="{{ question.id }}" data-value="C">
+                    <input type="radio" name="q{{ question.id }}" value="C" id="q{{ question.id }}_c" class="option-radio">
+                    <label for="q{{ question.id }}_c" class="option-text">
+                        <strong>C.</strong> {{ question.option_c }}
+                    </label>
+                </div>
+                
+                <!-- Option D -->
+                <div class="option-wrapper" data-question="{{ question.id }}" data-value="D">
+                    <input type="radio" name="q{{ question.id }}" value="D" id="q{{ question.id }}_d" class="option-radio">
+                    <label for="q{{ question.id }}_d" class="option-text">
+                        <strong>D.</strong> {{ question.option_d }}
+                    </label>
                 </div>
             </div>
+        </div>
         {% endfor %}
         
         <div class="text-center mt-4 mb-5">
-            <button type="button" class="btn btn-warning btn-lg me-3" onclick="confirmSubmit()">
+            <button type="button" class="btn-submit" id="submitBtn">
                 <i class="fas fa-flag-checkered me-2"></i> Submit Quiz
             </button>
-            <button type="button" class="btn btn-secondary btn-lg" onclick="resetAnswers()">
+            <button type="button" class="btn-reset" id="resetBtn">
                 <i class="fas fa-redo me-2"></i> Reset All
             </button>
         </div>
@@ -182,18 +256,27 @@
 </div>
 
 <script>
-    // Get data from Django template
-    let timeLeft = parseInt('{{ quiz.duration_minutes }}') * 60;
-    const timerDisplay = document.getElementById('timer');
-    const quizForm = document.getElementById('quizForm');
-    const progressFill = document.getElementById('progressFill');
-    const totalQuestions = parseInt('{{ questions|length }}');
-    let timerInterval;
+    // Get quiz data
+    var durationMinutes = parseInt("{{ quiz.duration_minutes|default:'1' }}");
+    var timeLeft = durationMinutes * 60;
+    var timerDisplay = document.getElementById('timer');
+    var progressFill = document.getElementById('progressFill');
+    var totalQuestions = parseInt("{{ questions|length|default:'0' }}");
+    var quizForm = document.getElementById('quizForm');
+    var timerInterval;
     
+    // Timer function
     function updateTimer() {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timerDisplay.textContent = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert("Time's up! Submitting your quiz...");
+            quizForm.submit();
+            return;
+        }
+        
+        var minutes = Math.floor(timeLeft / 60);
+        var seconds = timeLeft % 60;
+        timerDisplay.textContent = (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
         
         if (timeLeft <= 60) {
             timerDisplay.style.color = '#ff4444';
@@ -201,76 +284,148 @@
             timerDisplay.style.color = '#ffaa00';
         }
         
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            alert("Time's up! Submitting your quiz...");
-            quizForm.submit();
-        }
         timeLeft--;
     }
     
-    timerInterval = setInterval(updateTimer, 1000);
+    // Start timer
+    if (timeLeft > 0 && !isNaN(timeLeft)) {
+        timerInterval = setInterval(updateTimer, 1000);
+    }
     
+    // Function to update progress bar
     function updateProgress() {
-        const answered = document.querySelectorAll('.option-input:checked').length;
-        const percentage = (answered / totalQuestions) * 100;
-        if (progressFill) {
-            progressFill.style.width = percentage + '%';
+        var allRadios = document.querySelectorAll('.option-radio:checked');
+        var answeredCount = allRadios.length;
+        var percentage = (answeredCount / totalQuestions) * 100;
+        progressFill.style.width = percentage + '%';
+    }
+    
+    // Function to highlight selected option
+    function highlightSelectedOption(radio) {
+        // Remove selected class from all wrappers in the same question
+        var questionCard = radio.closest('.question-card');
+        var wrappers = questionCard.querySelectorAll('.option-wrapper');
+        wrappers.forEach(function(wrapper) {
+            wrapper.classList.remove('selected');
+        });
+        
+        // Add selected class to the parent wrapper
+        var wrapper = radio.closest('.option-wrapper');
+        if (wrapper) {
+            wrapper.classList.add('selected');
         }
     }
     
-    const radioButtons = document.querySelectorAll('.option-input');
-    radioButtons.forEach(function(radio) {
-        radio.addEventListener('change', updateProgress);
-    });
+    // Add event listeners to all radio buttons
+    var allRadios = document.querySelectorAll('.option-radio');
+    for (var i = 0; i < allRadios.length; i++) {
+        allRadios[i].addEventListener('change', function() {
+            updateProgress();
+            highlightSelectedOption(this);
+            saveAnswers();
+        });
+        
+        // Highlight already selected options on page load
+        if (allRadios[i].checked) {
+            highlightSelectedOption(allRadios[i]);
+        }
+    }
     
+    // Make option-wrapper clickable
+    var wrappers = document.querySelectorAll('.option-wrapper');
+    for (var i = 0; i < wrappers.length; i++) {
+        wrappers[i].addEventListener('click', function(e) {
+            // Don't trigger if clicking directly on radio (to avoid double trigger)
+            if (e.target.type !== 'radio') {
+                var radio = this.querySelector('.option-radio');
+                if (radio && !radio.checked) {
+                    radio.checked = true;
+                    // Trigger change event
+                    var changeEvent = new Event('change');
+                    radio.dispatchEvent(changeEvent);
+                }
+            }
+        });
+    }
+    
+    // Initial progress
     updateProgress();
     
-    function confirmSubmit() {
-        const answered = document.querySelectorAll('.option-input:checked').length;
-        if (answered < totalQuestions) {
-            if (confirm("You have answered " + answered + " out of " + totalQuestions + " questions.\nAre you sure you want to submit?")) {
-                clearInterval(timerInterval);
-                quizForm.submit();
+    // Submit confirmation
+    var submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            var answeredCount = document.querySelectorAll('.option-radio:checked').length;
+            
+            if (answeredCount < totalQuestions) {
+                if (confirm("You have answered " + answeredCount + " out of " + totalQuestions + " questions.\nAre you sure you want to submit?")) {
+                    clearInterval(timerInterval);
+                    quizForm.submit();
+                }
+            } else {
+                if (confirm("Are you sure you want to submit your quiz?")) {
+                    clearInterval(timerInterval);
+                    quizForm.submit();
+                }
             }
-        } else {
-            if (confirm('Are you sure you want to submit your quiz?')) {
-                clearInterval(timerInterval);
-                quizForm.submit();
-            }
-        }
+        });
     }
     
-    function resetAnswers() {
-        if (confirm('Reset all your answers?')) {
-            document.querySelectorAll('.option-input').forEach(function(radio) {
-                radio.checked = false;
-            });
-            updateProgress();
-        }
+    // Reset answers
+    var resetBtn = document.getElementById('resetBtn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            if (confirm('Reset all your answers?')) {
+                var allRadiosReset = document.querySelectorAll('.option-radio');
+                for (var i = 0; i < allRadiosReset.length; i++) {
+                    allRadiosReset[i].checked = false;
+                }
+                // Remove selected class from all wrappers
+                var allWrappers = document.querySelectorAll('.option-wrapper');
+                for (var i = 0; i < allWrappers.length; i++) {
+                    allWrappers[i].classList.remove('selected');
+                }
+                updateProgress();
+                localStorage.removeItem('quiz_{{ quiz.id }}');
+            }
+        });
     }
     
+    // Save answers to localStorage
     function saveAnswers() {
         var answers = {};
-        document.querySelectorAll('.option-input:checked').forEach(function(checked) {
-            answers[checked.name] = checked.value;
-        });
+        var checkedRadios = document.querySelectorAll('.option-radio:checked');
+        for (var i = 0; i < checkedRadios.length; i++) {
+            answers[checkedRadios[i].name] = checkedRadios[i].value;
+        }
         localStorage.setItem('quiz_{{ quiz.id }}', JSON.stringify(answers));
     }
     
+    // Load answers from localStorage
     function loadAnswers() {
         var saved = localStorage.getItem('quiz_{{ quiz.id }}');
         if (saved) {
             var answers = JSON.parse(saved);
-            Object.keys(answers).forEach(function(name) {
+            for (var name in answers) {
                 var radio = document.querySelector('input[name="' + name + '"][value="' + answers[name] + '"]');
-                if (radio) radio.checked = true;
-            });
+                if (radio) {
+                    radio.checked = true;
+                    // Trigger change event to highlight
+                    var changeEvent = new Event('change');
+                    radio.dispatchEvent(changeEvent);
+                }
+            }
             updateProgress();
         }
     }
     
+    // Auto-save before leaving
     window.addEventListener('beforeunload', saveAnswers);
+    
+    // Load saved answers
     loadAnswers();
 </script>
+{% endif %}
 {% endblock %}

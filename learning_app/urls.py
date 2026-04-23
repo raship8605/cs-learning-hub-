@@ -21,6 +21,7 @@ urlpatterns = [
     # Quizzes
     path('quizzes/', views.quiz_list, name='quiz_list'),
     path('quiz/<int:quiz_id>/take/', views.take_quiz, name='take_quiz'),
+     path('quiz/<int:quiz_id>/retake/', views.retake_quiz, name='retake_quiz'),  # ← ADD THIS LINE
     path('quiz/result/<int:attempt_id>/', views.quiz_result, name='quiz_result'),
     
     # Papers
