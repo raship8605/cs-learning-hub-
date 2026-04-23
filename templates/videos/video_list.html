@@ -3,122 +3,237 @@
 
 {% block content %}
 <style>
+    /* Hero Section - Matching Dashboard Welcome Card */
     .video-hero {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #2C3E50, #34495E);
         color: white;
-        padding: 50px 40px;
-        border-radius: 20px;
-        margin-bottom: 40px;
+        padding: 40px 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
         text-align: center;
     }
-    .video-hero h1 { font-size: 2.5rem; margin-bottom: 15px; }
-    .video-hero h1 i { margin-right: 15px; }
     
+    .video-hero h1 { 
+        font-size: 2rem; 
+        margin-bottom: 10px;
+        font-weight: 500;
+    }
+    
+    .video-hero h1 i { 
+        margin-right: 12px;
+    }
+    
+    /* Subject Cards - Simple White Cards (like stat cards) */
     .subject-card {
         cursor: pointer;
         transition: all 0.3s ease;
         border: none;
-        border-radius: 15px;
+        border-radius: 12px;
         padding: 15px;
         text-align: center;
         background: white;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-    .subject-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-    .subject-card.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-    .subject-icon { font-size: 2.5rem; margin-bottom: 10px; }
     
+    .subject-card:hover { 
+        transform: translateY(-3px); 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+    }
+    
+    .subject-card.active { 
+        background: #2C3E50; 
+        color: white; 
+    }
+    
+    .subject-card.active .text-muted {
+        color: rgba(255,255,255,0.7) !important;
+    }
+    
+    .subject-icon { 
+        font-size: 2rem; 
+        margin-bottom: 8px; 
+    }
+    
+    .subject-card h6 {
+        font-size: 0.9rem;
+        margin-bottom: 3px;
+        font-weight: 600;
+    }
+    
+    .subject-card small {
+        font-size: 0.7rem;
+    }
+    
+    /* Video Cards - Simple White Cards */
     .video-card {
         transition: all 0.3s ease;
         border: none;
-        border-radius: 15px;
+        border-radius: 12px;
         overflow: hidden;
         cursor: pointer;
         background: white;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         height: 100%;
     }
-    .video-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
     
-    .thumbnail-wrapper { position: relative; overflow: hidden; background: #000; }
-    .thumbnail-wrapper img { width: 100%; transition: transform 0.3s ease; }
-    .video-card:hover .thumbnail-wrapper img { transform: scale(1.05); }
+    .video-card:hover { 
+        transform: translateY(-3px); 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+    }
+    
+    .thumbnail-wrapper { 
+        position: relative; 
+        overflow: hidden; 
+        background: #000; 
+    }
+    
+    .thumbnail-wrapper img { 
+        width: 100%; 
+        transition: transform 0.3s ease; 
+    }
+    
+    .video-card:hover .thumbnail-wrapper img { 
+        transform: scale(1.05); 
+    }
     
     .play-overlay {
         position: absolute;
         top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0,0,0,0.4);
         display: flex;
         align-items: center;
         justify-content: center;
         opacity: 0;
         transition: opacity 0.3s ease;
     }
-    .video-card:hover .play-overlay { opacity: 1; }
-    .play-overlay i { font-size: 50px; color: white; }
+    
+    .video-card:hover .play-overlay { 
+        opacity: 1; 
+    }
+    
+    .play-overlay i { 
+        font-size: 45px; 
+        color: white; 
+    }
     
     .subject-badge {
         position: absolute;
         top: 10px; left: 10px;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: bold;
-        background: #667eea;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 10px;
+        font-weight: 500;
+        background: #2C3E50;
         color: white;
         z-index: 1;
     }
     
-    .search-wrapper { position: relative; margin-bottom: 30px; }
+    /* Search Box */
+    .search-wrapper { 
+        position: relative; 
+        margin-bottom: 25px; 
+    }
+    
     .search-wrapper i {
         position: absolute;
-        left: 18px; top: 50%;
+        left: 15px; top: 50%;
         transform: translateY(-50%);
-        color: #999;
+        color: #95A5A6;
+        font-size: 14px;
     }
+    
     .search-input {
         width: 100%;
-        padding: 14px 20px 14px 50px;
-        border: 2px solid #e0e0e0;
-        border-radius: 50px;
-        font-size: 16px;
+        padding: 10px 15px 10px 40px;
+        border: 1px solid #ddd;
+        border-radius: 25px;
+        font-size: 14px;
+        transition: all 0.3s ease;
     }
-    .search-input:focus { outline: none; border-color: #667eea; }
     
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        background: #f8f9fa;
-        border-radius: 20px;
+    .search-input:focus { 
+        outline: none; 
+        border-color: #3498DB;
     }
-    .empty-state i { font-size: 80px; color: #ccc; margin-bottom: 20px; }
     
+    /* Section Title - Matching Dashboard */
     .section-title {
         margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 3px solid #667eea;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #3498DB;
         display: inline-block;
+        color: #2C3E50;
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        background: #F8F9FA;
+        border-radius: 12px;
+    }
+    
+    .empty-state i { 
+        font-size: 60px; 
+        color: #ccc; 
+        margin-bottom: 15px; 
+    }
+    
+    .empty-state h4 {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+    }
+    
+    /* Video Meta */
+    .view-count {
+        color: #95A5A6;
+        font-size: 11px;
+    }
+    
+    .watch-link {
+        color: #3498DB;
+        font-size: 11px;
+        font-weight: 500;
+    }
+    
+    .video-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #2C3E50;
+        line-height: 1.4;
+    }
+    
+    .video-desc {
+        font-size: 0.75rem;
+        color: #7F8C8D;
+        margin-bottom: 8px;
     }
 </style>
 
 <div class="container py-4">
+    <!-- Hero Section -->
     <div class="video-hero">
         <h1><i class="fab fa-youtube"></i> Video Library</h1>
-        <p class="lead mb-0">Learn from the best YouTube tutorials Available for you</p>
+        <p class="mb-0">Learn from the best YouTube tutorials available for you</p>
     </div>
 
+    <!-- Search Bar -->
     <div class="search-wrapper">
         <i class="fas fa-search"></i>
         <input type="text" class="search-input" id="searchVideo" placeholder="Search for videos...">
     </div>
 
-    <div class="mb-5">
+    <!-- Subject Filters -->
+    <div class="mb-4">
         <h4 class="section-title"><i class="fas fa-code me-2"></i>Programming Languages</h4>
         <div class="row" id="subjectFilters">
             <div class="col-md-2 col-6 mb-3">
                 <div class="subject-card active" data-subject="all">
                     <div class="subject-icon"><i class="fas fa-globe"></i></div>
-                    <h6 class="mb-0">All Videos</h6>
+                    <h6>All Videos</h6>
                     <small class="text-muted">{{ videos|length }} videos</small>
                 </div>
             </div>
@@ -127,14 +242,14 @@
                 <div class="subject-card" data-subject="{{ subject.id }}">
                     <div class="subject-icon">
                         {% if subject.name == "Python" %}
-                            <i class="fab fa-python" style="color: #3776AB;"></i>
+                            <i class="fab fa-python"></i>
                         {% elif subject.name == "JavaScript" %}
-                            <i class="fab fa-js" style="color: #F7DF1E;"></i>
+                            <i class="fab fa-js"></i>
                         {% else %}
-                            <i class="fas fa-code" style="color: #667eea;"></i>
+                            <i class="fas fa-code"></i>
                         {% endif %}
                     </div>
-                    <h6 class="mb-0">{{ subject.name }}</h6>
+                    <h6>{{ subject.name }}</h6>
                     <small class="text-muted">{{ subject.videos.count }} videos</small>
                 </div>
             </div>
@@ -142,13 +257,14 @@
         </div>
     </div>
 
+    <!-- Videos Grid -->
     <div>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="section-title" style="border-bottom: none;">
                 <i class="fab fa-youtube text-danger me-2"></i>
                 <span id="categoryTitle">All Videos</span>
             </h4>
-            <span class="text-muted" id="videoCount"></span>
+            <span class="text-muted small" id="videoCount"></span>
         </div>
         
         <div class="row" id="videosContainer">
@@ -161,11 +277,11 @@
                         <div class="play-overlay"><i class="fas fa-play-circle"></i></div>
                     </div>
                     <div class="p-3">
-                        <h6 class="mb-2">{{ video.title|truncatechars:55 }}</h6>
-                        <p class="small text-muted mb-2">{{ video.description|truncatechars:70|default:"No description" }}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted"><i class="fas fa-eye me-1"></i> {{ video.views }} views</small>
-                            <small class="text-primary"><i class="fas fa-play-circle me-1"></i> Watch Now</small>
+                        <div class="video-title">{{ video.title|truncatechars:55 }}</div>
+                        <div class="video-desc">{{ video.description|truncatechars:65|default:"No description available" }}</div>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <span class="view-count"><i class="fas fa-eye me-1"></i> {{ video.views }} views</span>
+                            <span class="watch-link"><i class="fas fa-play-circle me-1"></i> Watch</span>
                         </div>
                     </div>
                 </div>
@@ -177,7 +293,7 @@
                     <h4>No Videos Available</h4>
                     <p class="text-muted">Check back later for new video tutorials!</p>
                     {% if user.is_superuser %}
-                    <a href="/admin/learning_app/youtubevideo/add/" class="btn btn-primary mt-2">Add Videos</a>
+                    <a href="/admin/learning_app/youtubevideo/add/" class="btn btn-sm btn-primary mt-2">Add Videos</a>
                     {% endif %}
                 </div>
             </div>
@@ -185,11 +301,12 @@
         </div>
     </div>
     
+    <!-- No Results Message -->
     <div id="noResults" class="empty-state" style="display: none;">
         <i class="fas fa-search"></i>
         <h4>No videos found</h4>
         <p class="text-muted">Try a different subject or search term</p>
-        <button class="btn btn-outline-primary" onclick="resetFilters()">Reset Filters</button>
+        <button class="btn btn-sm btn-outline-primary mt-2" onclick="resetFilters()">Reset Filters</button>
     </div>
 </div>
 
