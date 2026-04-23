@@ -3,135 +3,264 @@
 
 {% block content %}
 <style>
+    /* Hero Section - Matching Dashboard Theme */
     .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #2C3E50, #34495E);
         color: white;
-        padding: 40px;
-        border-radius: 20px;
+        padding: 40px 30px;
+        border-radius: 15px;
         margin-bottom: 30px;
+        text-align: center;
     }
     
+    .hero-section h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        font-weight: 500;
+    }
+    
+    .hero-section p {
+        opacity: 0.9;
+    }
+    
+    /* Quiz Cards - Simple White Cards */
     .quiz-card {
-        transition: transform 0.3s, box-shadow 0.3s;
+        transition: all 0.3s ease;
         border: none;
-        border-radius: 15px;
+        border-radius: 12px;
         overflow: hidden;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        height: 100%;
     }
     
     .quiz-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
     .subject-badge {
-        background: #667eea;
+        background: #3498DB;
         color: white;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 11px;
         display: inline-block;
         margin-bottom: 10px;
     }
     
+    /* Button Styles - Simple */
     .btn-start {
-        background: linear-gradient(135deg, #28a745, #20c997);
+        background: #3498DB;
         border: none;
-        border-radius: 25px;
-        padding: 10px;
-        font-weight: bold;
+        border-radius: 20px;
+        padding: 8px;
+        font-weight: 500;
+        font-size: 13px;
         width: 100%;
+        color: white;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-start:hover {
+        background: #2980B9;
+        color: white;
     }
     
     .btn-retake {
-        background: linear-gradient(135deg, #ffc107, #ff9800);
+        background: #F39C12;
         border: none;
-        border-radius: 25px;
-        padding: 10px;
-        font-weight: bold;
-        color: #333;
-        width: 100%;
-    }
-    
-    .btn-retake:hover {
-        color: #333;
-        opacity: 0.9;
-    }
-    
-    .btn-result {
-        background: linear-gradient(135deg, #17a2b8, #6f42c1);
-        border: none;
-        border-radius: 25px;
-        padding: 10px;
-        font-weight: bold;
+        border-radius: 20px;
+        padding: 8px;
+        font-weight: 500;
+        font-size: 13px;
         color: white;
         width: 100%;
         text-decoration: none;
         display: block;
         text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-retake:hover {
+        background: #E67E22;
+        color: white;
+    }
+    
+    .btn-result {
+        background: #95A5A6;
+        border: none;
+        border-radius: 20px;
+        padding: 8px;
+        font-weight: 500;
+        font-size: 13px;
+        color: white;
+        width: 100%;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        transition: all 0.3s ease;
     }
     
     .btn-result:hover {
+        background: #7F8C8D;
         color: white;
-        opacity: 0.9;
     }
     
+    /* Badges */
     .passed-badge {
-        background: #28a745;
+        background: #27AE60;
         color: white;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        margin-left: 5px;
     }
     
     .failed-badge {
-        background: #dc3545;
+        background: #E74C3C;
         color: white;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        margin-left: 5px;
+    }
+    
+    /* Filter Section */
+    .filter-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+    }
+    
+    .filter-header {
+        background: #F8F9FA;
+        padding: 12px 20px;
+        border-bottom: 1px solid #E9ECEF;
+    }
+    
+    .filter-header h5 {
+        margin: 0;
+        font-weight: 600;
+        color: #2C3E50;
+        font-size: 1rem;
+    }
+    
+    .filter-header i {
+        color: #3498DB;
+        margin-right: 8px;
+    }
+    
+    .filter-buttons {
+        padding: 15px;
     }
     
     .filter-btn {
-        margin: 5px;
-        border-radius: 25px;
-        padding: 8px 20px;
+        margin: 4px;
+        border-radius: 20px;
+        padding: 6px 16px;
+        font-size: 13px;
+        transition: all 0.3s ease;
     }
     
     .filter-btn.active {
-        background: #667eea;
+        background: #2C3E50;
         color: white;
-        border-color: #667eea;
+        border-color: #2C3E50;
     }
     
+    /* Quiz Stats */
+    .quiz-stats {
+        background: #F8F9FA;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 12px;
+    }
+    
+    .quiz-stats i {
+        font-size: 14px;
+    }
+    
+    .quiz-stats small {
+        font-size: 11px;
+        color: #7F8C8D;
+    }
+    
+    /* Alert Box */
+    .score-alert {
+        background: #F8F9FA;
+        border-radius: 10px;
+        padding: 8px;
+        margin-bottom: 12px;
+        font-size: 12px;
+        text-align: center;
+    }
+    
+    .score-alert i {
+        margin-right: 5px;
+    }
+    
+    /* Empty State */
     .empty-state {
         text-align: center;
-        padding: 60px 20px;
-        background: #f8f9fa;
-        border-radius: 20px;
+        padding: 50px 20px;
+        background: #F8F9FA;
+        border-radius: 12px;
+    }
+    
+    .empty-state i {
+        font-size: 60px;
+        color: #ccc;
+        margin-bottom: 15px;
+    }
+    
+    .empty-state h4 {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+        color: #2C3E50;
+    }
+    
+    .quiz-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2C3E50;
+        margin: 8px 0;
+    }
+    
+    .quiz-desc {
+        font-size: 0.75rem;
+        color: #7F8C8D;
+        margin-bottom: 12px;
+        line-height: 1.4;
     }
 </style>
 
 <div class="container py-4">
     <!-- Hero Section -->
     <div class="hero-section text-center">
-        <h1 class="display-5 mb-3">
+        <h1>
             <i class="fas fa-question-circle me-3"></i>Practice Quizzes
         </h1>
-        <p class="lead mb-0">Test your knowledge and track your progress</p>
+        <p class="mb-0">Test your knowledge and track your progress</p>
     </div>
     
     <!-- Subject Filter -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="fas fa-code me-2"></i>Select Programming Language</h5>
+    <div class="filter-card">
+        <div class="filter-header">
+            <h5><i class="fas fa-code me-2"></i>Select Programming Language</h5>
         </div>
-        <div class="card-body">
+        <div class="filter-buttons">
             <div class="d-flex flex-wrap" id="subjectFilter">
-                <button class="btn btn-primary filter-btn active" data-subject="all">
+                <button class="btn btn-outline-secondary filter-btn active" data-subject="all">
                     <i class="fas fa-globe me-1"></i> All Subjects
                 </button>
                 {% for subject in subjects %}
-                    <button class="btn btn-outline-primary filter-btn" data-subject="{{ subject.id }}">
+                    <button class="btn btn-outline-secondary filter-btn" data-subject="{{ subject.id }}">
                         <i class="fas fa-tag me-1"></i> {{ subject.name }}
                     </button>
                 {% endfor %}
@@ -143,15 +272,15 @@
     <div class="row" id="quizzesContainer">
         {% for quiz in quizzes %}
             <div class="col-md-6 col-lg-4 mb-4 quiz-item" data-subject="{{ quiz.subject.id }}">
-                <div class="card quiz-card h-100 shadow-sm">
-                    <div class="card-body">
+                <div class="quiz-card">
+                    <div class="card-body p-3">
                         <span class="subject-badge">
                             <i class="fas fa-folder-open me-1"></i> {{ quiz.subject.name }}
                         </span>
-                        <h5 class="card-title mt-2">{{ quiz.title }}</h5>
-                        <p class="card-text text-muted small">{{ quiz.description|default:"Test your knowledge with this quiz"|truncatewords:15 }}</p>
+                        <div class="quiz-title">{{ quiz.title }}</div>
+                        <div class="quiz-desc">{{ quiz.description|default:"Test your knowledge with this quiz"|truncatewords:12 }}</div>
                         
-                        <div class="bg-light rounded p-2 mb-3">
+                        <div class="quiz-stats">
                             <div class="row text-center">
                                 <div class="col-4">
                                     <i class="fas fa-clock text-primary"></i>
@@ -171,36 +300,34 @@
                         {% with attempt=quiz.attempts.first %}
                             {% if attempt %}
                                 <!-- Quiz Already Attempted -->
-                                <div class="alert alert-info small text-center mb-2 p-2">
-                                    <i class="fas fa-chart-line me-1"></i>
+                                <div class="score-alert">
+                                    <i class="fas fa-chart-line"></i>
                                     <strong>Your Score:</strong> {{ attempt.score }}/{{ attempt.total_marks }} 
                                     ({{ attempt.percentage|floatformat:0 }}%)
                                     {% if attempt.passed %}
-                                        <span class="passed-badge ms-1"><i class="fas fa-check me-1"></i>Passed</span>
+                                        <span class="passed-badge"><i class="fas fa-check"></i> Passed</span>
                                     {% else %}
-                                        <span class="failed-badge ms-1"><i class="fas fa-times me-1"></i>Failed</span>
+                                        <span class="failed-badge"><i class="fas fa-times"></i> Failed</span>
                                     {% endif %}
                                 </div>
                                 
                                 <div class="d-grid gap-2">
                                     {% if attempt.passed %}
-                                        <!-- Passed: Show View Result button only (no retake) -->
                                         <a href="{% url 'quiz_result' attempt.id %}" class="btn-result">
                                             <i class="fas fa-chart-bar me-2"></i> View Result
                                         </a>
                                     {% else %}
-                                        <!-- Failed: Show Retake button AND View Result button -->
                                         <a href="{% url 'retake_quiz' quiz.id %}" class="btn-retake">
-                                            <i class="fas fa-redo me-2"></i> Retake Quiz (Failed)
+                                            <i class="fas fa-redo me-2"></i> Retake Quiz
                                         </a>
                                         <a href="{% url 'quiz_result' attempt.id %}" class="btn-result mt-2">
-                                            <i class="fas fa-chart-bar me-2"></i> View Previous Result
+                                            <i class="fas fa-chart-bar me-2"></i> View Result
                                         </a>
                                     {% endif %}
                                 </div>
                             {% else %}
                                 <!-- Not Attempted Yet -->
-                                <a href="{% url 'take_quiz' quiz.id %}" class="btn-start btn btn-primary">
+                                <a href="{% url 'take_quiz' quiz.id %}" class="btn-start">
                                     <i class="fas fa-play me-2"></i> Start Quiz
                                 </a>
                             {% endif %}
@@ -214,6 +341,9 @@
                     <i class="fas fa-folder-open"></i>
                     <h4>No Quizzes Available</h4>
                     <p class="text-muted">Check back later for new quizzes!</p>
+                    {% if user.is_superuser %}
+                        <a href="/admin/learning_app/quiz/add/" class="btn btn-primary btn-sm mt-2">Create Quiz</a>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
@@ -245,12 +375,8 @@
         subjectBtns[i].addEventListener('click', function() {
             for (var j = 0; j < subjectBtns.length; j++) {
                 subjectBtns[j].classList.remove('active');
-                subjectBtns[j].classList.remove('btn-primary');
-                subjectBtns[j].classList.add('btn-outline-primary');
             }
             this.classList.add('active');
-            this.classList.remove('btn-outline-primary');
-            this.classList.add('btn-primary');
             filterQuizzes();
         });
     }
