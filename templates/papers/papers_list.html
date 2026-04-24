@@ -3,168 +3,237 @@
 
 {% block content %}
 <style>
+    /* Hero Section - Matching Dashboard Theme */
     .papers-hero {
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        background: linear-gradient(135deg, #2C3E50, #34495E);
         color: white;
-        padding: 50px 40px;
-        border-radius: 20px;
-        margin-bottom: 40px;
+        padding: 40px 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
         text-align: center;
     }
     
     .papers-hero h1 {
-        font-size: 2.5rem;
-        margin-bottom: 15px;
+        font-size: 2rem;
+        margin-bottom: 10px;
+        font-weight: 500;
     }
     
     .papers-hero h1 i {
-        margin-right: 15px;
+        margin-right: 12px;
     }
     
+    .papers-hero p {
+        opacity: 0.9;
+    }
+    
+    /* Subject Cards - Simple White Cards */
     .subject-card {
         cursor: pointer;
         transition: all 0.3s ease;
         border: none;
-        border-radius: 15px;
-        padding: 15px;
+        border-radius: 12px;
+        padding: 12px;
         text-align: center;
         background: white;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     
     .subject-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
     .subject-card.active {
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        background: #2C3E50;
         color: white;
     }
     
     .subject-card.active .text-muted {
-        color: rgba(255,255,255,0.8) !important;
+        color: rgba(255,255,255,0.7) !important;
     }
     
     .subject-icon {
-        font-size: 2rem;
-        margin-bottom: 10px;
+        font-size: 1.8rem;
+        margin-bottom: 8px;
     }
     
+    .subject-card h6 {
+        font-size: 0.85rem;
+        margin-bottom: 3px;
+        font-weight: 600;
+    }
+    
+    .subject-card small {
+        font-size: 0.7rem;
+    }
+    
+    /* Badges */
     .year-badge {
-        background: #dc3545;
+        background: #3498DB;
         color: white;
-        padding: 3px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: bold;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: 11px;
+        font-weight: 500;
         display: inline-block;
     }
     
     .semester-badge {
-        background: #6c757d;
+        background: #95A5A6;
         color: white;
-        padding: 3px 12px;
-        border-radius: 20px;
-        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: 11px;
         display: inline-block;
     }
     
+    /* Download Button */
     .download-btn {
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        background: #27AE60;
         border: none;
-        padding: 5px 15px;
-        border-radius: 20px;
+        padding: 5px 12px;
+        border-radius: 15px;
         color: white;
         text-decoration: none;
-        font-size: 12px;
+        font-size: 11px;
         display: inline-block;
+        transition: all 0.3s ease;
     }
     
     .download-btn:hover {
-        transform: scale(1.05);
+        background: #229954;
+        transform: scale(1.02);
         color: white;
     }
     
+    /* Filter Bar */
     .filter-bar {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 15px;
-        margin-bottom: 30px;
+        background: #F8F9FA;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 25px;
     }
     
     .filter-select {
-        border-radius: 10px;
-        padding: 10px;
+        border-radius: 8px;
+        padding: 8px 12px;
         border: 1px solid #ddd;
         width: 100%;
+        font-size: 14px;
     }
     
+    .filter-select:focus {
+        outline: none;
+        border-color: #3498DB;
+    }
+    
+    /* Search Box */
     .search-wrapper {
         position: relative;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
     }
     
     .search-wrapper i {
         position: absolute;
-        left: 18px;
+        left: 15px;
         top: 50%;
         transform: translateY(-50%);
-        color: #999;
+        color: #95A5A6;
+        font-size: 14px;
     }
     
     .search-input {
         width: 100%;
-        padding: 14px 20px 14px 50px;
-        border: 2px solid #e0e0e0;
-        border-radius: 50px;
-        font-size: 16px;
+        padding: 10px 15px 10px 40px;
+        border: 1px solid #ddd;
+        border-radius: 25px;
+        font-size: 14px;
+        transition: all 0.3s ease;
     }
     
     .search-input:focus {
         outline: none;
-        border-color: #dc3545;
+        border-color: #3498DB;
     }
     
+    /* Empty State */
     .empty-state {
         text-align: center;
-        padding: 60px 20px;
-        background: #f8f9fa;
-        border-radius: 20px;
+        padding: 50px 20px;
+        background: #F8F9FA;
+        border-radius: 12px;
     }
     
     .empty-state i {
-        font-size: 80px;
+        font-size: 60px;
         color: #ccc;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
     
+    .empty-state h4 {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+        color: #2C3E50;
+    }
+    
+    /* Section Title */
     .section-title {
         margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 3px solid #dc3545;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #3498DB;
         display: inline-block;
+        color: #2C3E50;
+        font-weight: 600;
+        font-size: 1.1rem;
     }
     
+    /* Table */
     .papers-table {
         width: 100%;
         border-collapse: collapse;
     }
     
     .papers-table th {
-        background: #f8f9fa;
+        background: #F8F9FA;
         padding: 12px;
         text-align: left;
         font-weight: 600;
+        font-size: 0.8rem;
+        color: #2C3E50;
+        border-bottom: 2px solid #E9ECEF;
     }
     
     .papers-table td {
         padding: 12px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #E9ECEF;
+        font-size: 0.85rem;
+        vertical-align: middle;
     }
     
     .papers-table tr:hover {
-        background: #f8f9fa;
+        background: #F8F9FA;
+    }
+    
+    .subject-badge {
+        background: #3498DB;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+    }
+    
+    @media (max-width: 768px) {
+        .papers-table th, .papers-table td {
+            padding: 8px;
+            font-size: 0.75rem;
+        }
+        .subject-card {
+            padding: 8px;
+        }
+        .subject-icon {
+            font-size: 1.3rem;
+        }
     }
 </style>
 
@@ -174,17 +243,17 @@
         <h1>
             <i class="fas fa-file-alt"></i> Previous Year Papers
         </h1>
-        <p class="lead mb-0">Practice with real exam papers from previous years</p>
+        <p class="mb-0">Practice with real exam papers from previous years</p>
     </div>
 
     <!-- Search Bar -->
     <div class="search-wrapper">
         <i class="fas fa-search"></i>
-        <input type="text" class="search-input" id="searchPapers" placeholder="Search for papers by title...">
+        <input type="text" class="search-input" id="searchPapers" placeholder="Search for papers...">
     </div>
 
     <!-- Subject Filters -->
-    <div class="mb-5">
+    <div class="mb-4">
         <h4 class="section-title">
             <i class="fas fa-graduation-cap me-2"></i>Subjects
         </h4>
@@ -194,7 +263,7 @@
                     <div class="subject-icon">
                         <i class="fas fa-globe"></i>
                     </div>
-                    <h6 class="mb-0">All Papers</h6>
+                    <h6>All Papers</h6>
                     <small class="text-muted">{{ papers|length }} papers</small>
                 </div>
             </div>
@@ -203,16 +272,16 @@
                 <div class="subject-card" data-subject="{{ subject.id }}">
                     <div class="subject-icon">
                         {% if subject.name == "Python" %}
-                            <i class="fab fa-python" style="color: #3776AB;"></i>
+                            <i class="fab fa-python"></i>
                         {% elif subject.name == "JavaScript" %}
-                            <i class="fab fa-js" style="color: #F7DF1E;"></i>
+                            <i class="fab fa-js"></i>
                         {% elif subject.name == "Java" %}
-                            <i class="fab fa-java" style="color: #007396;"></i>
+                            <i class="fab fa-java"></i>
                         {% else %}
-                            <i class="fas fa-file-alt" style="color: #dc3545;"></i>
+                            <i class="fas fa-file-alt"></i>
                         {% endif %}
                     </div>
-                    <h6 class="mb-0">{{ subject.name }}</h6>
+                    <h6>{{ subject.name }}</h6>
                     <small class="text-muted">{{ subject.papers.count }} papers</small>
                 </div>
             </div>
@@ -222,9 +291,9 @@
 
     <!-- Year and Semester Filters -->
     <div class="filter-bar">
-        <div class="row">
+        <div class="row g-3">
             <div class="col-md-6">
-                <label class="form-label fw-bold"><i class="fas fa-calendar me-1"></i>Filter by Year</label>
+                <label class="form-label fw-bold small mb-1"><i class="fas fa-calendar me-1"></i>Filter by Year</label>
                 <select id="yearFilter" class="filter-select">
                     <option value="all">All Years</option>
                     {% for year in years %}
@@ -233,7 +302,7 @@
                 </select>
             </div>
             <div class="col-md-6">
-                <label class="form-label fw-bold"><i class="fas fa-layer-group me-1"></i>Filter by Semester</label>
+                <label class="form-label fw-bold small mb-1"><i class="fas fa-layer-group me-1"></i>Filter by Semester</label>
                 <select id="semesterFilter" class="filter-select">
                     <option value="all">All Semesters</option>
                     <option value="1">Semester 1</option>
@@ -256,7 +325,7 @@
                 <i class="fas fa-file-pdf text-danger me-2"></i>
                 <span id="categoryTitle">All Papers</span>
             </h4>
-            <span class="text-muted" id="papersCount"></span>
+            <span class="text-muted small" id="papersCount"></span>
         </div>
         
         <div class="table-responsive">
@@ -279,10 +348,10 @@
                         data-year="{{ paper.year }}"
                         data-semester="{{ paper.semester }}">
                         <td>{{ paper.title }}</td>
-                        <td><span class="badge bg-secondary">{{ paper.subject.name }}</span></td>
+                        <td><span class="subject-badge">{{ paper.subject.name }}</span></td>
                         <td><span class="year-badge">{{ paper.year }}</span></td>
                         <td><span class="semester-badge">Sem {{ paper.semester }}</span></td>
-                        <td>{{ paper.downloads }}</td>
+                        <td><i class="fas fa-download me-1"></i> {{ paper.downloads }}</td>
                         <td>
                             <a href="{% url 'download_paper' paper.id %}" class="download-btn">
                                 <i class="fas fa-download me-1"></i> Download
@@ -297,8 +366,8 @@
                                 <h4>No Papers Available</h4>
                                 <p class="text-muted">Check back later for previous year papers!</p>
                                 {% if user.is_superuser %}
-                                <a href="/admin/learning_app/previousyearpaper/add/" class="btn btn-danger mt-2">
-                                    <i class="fas fa-plus me-2"></i>Add Papers (Admin)
+                                <a href="/admin/learning_app/previousyearpaper/add/" class="btn btn-primary btn-sm mt-2">
+                                    <i class="fas fa-plus me-2"></i>Add Papers
                                 </a>
                                 {% endif %}
                             </div>
@@ -315,14 +384,13 @@
         <i class="fas fa-search"></i>
         <h4>No papers found</h4>
         <p class="text-muted">Try a different subject, year, or search term</p>
-        <button class="btn btn-outline-danger" onclick="resetFilters()">
+        <button class="btn btn-sm btn-outline-primary mt-2" onclick="resetFilters()">
             <i class="fas fa-redo me-2"></i>Reset Filters
         </button>
     </div>
 </div>
 
 <script>
-    // Check if elements exist before using them
     var subjectCards = document.querySelectorAll('.subject-card');
     var paperItems = document.querySelectorAll('.paper-item');
     var searchInput = document.getElementById('searchPapers');
@@ -338,9 +406,9 @@
     var currentSemester = 'all';
     
     var subjectNames = {'all': 'All Papers'};
-    // {% for subject in subjects %}
-    // subjectNames['{{ subject.id }}'] = '{{ subject.name }}';
-    // {% endfor %}
+    {% for subject in subjects %}
+    subjectNames['{{ subject.id }}'] = '{{ subject.name }}';
+    {% endfor %}
     
     function filterPapers() {
         if (!paperItems.length) return;
@@ -381,7 +449,6 @@
         }
     }
     
-    // Subject filter click
     if (subjectCards.length) {
         for (var i = 0; i < subjectCards.length; i++) {
             var card = subjectCards[i];
@@ -398,7 +465,6 @@
         }
     }
     
-    // Search filter
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             currentSearch = this.value.toLowerCase();
@@ -406,7 +472,6 @@
         });
     }
     
-    // Year filter
     if (yearFilter) {
         yearFilter.addEventListener('change', function() {
             currentYear = this.value;
@@ -414,7 +479,6 @@
         });
     }
     
-    // Semester filter
     if (semesterFilter) {
         semesterFilter.addEventListener('change', function() {
             currentSemester = this.value;

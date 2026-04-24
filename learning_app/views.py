@@ -111,28 +111,13 @@ def video_list(request):
     return render(request, 'videos/video_list.html', context)
 
 # Video Detail
-@login_required
 def video_detail(request, video_id):
     video = get_object_or_404(YouTubeVideo, id=video_id)
+    # Increment view count
     video.views += 1
     video.save()
-    
-    # Log activity
-    UserActivity.objects.get_or_create(
-        user=request.user,
-        activity_type='video_watch',
-        content_type='video',
-        content_id=video.id,
-        defaults={'content_title': video.title}
-    )
-    
-    related_videos = YouTubeVideo.objects.filter(subject=video.subject).exclude(id=video.id)[:4]
-    
-    context = {
-        'video': video,
-        'related_videos': related_videos,
-    }
-    return render(request, 'videos/video_detail.html', context)
+    # Redirect to actual YouTube video
+    return HttpResponseRedirect(f'https://www.youtube.com/watch?v={video.youtube_id}')
 
 # Notes List
 @login_required
