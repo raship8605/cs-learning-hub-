@@ -287,32 +287,16 @@ def quiz_result(request, attempt_id):
 # Papers List
 @login_required
 def papers_list(request):
-    subject_id = request.GET.get('subject')
-    search_query = request.GET.get('search')
-    year = request.GET.get('year')
-    semester = request.GET.get('semester')
-    
-    papers = PreviousYearPaper.objects.all()
-    
-    if subject_id:
-        papers = papers.filter(subject_id=subject_id)
-    if search_query:
-        papers = papers.filter(Q(title__icontains=search_query))
-    if year:
-        papers = papers.filter(year=year)
-    if semester:
-        papers = papers.filter(semester=semester)
-    
-    subjects = Subject.objects.all()
-    years = PreviousYearPaper.objects.values_list('year', flat=True).distinct().order_by('-year')
+    """Display all previous year papers - NO FILTERS"""
+    papers = PreviousYearPaper.objects.all().order_by('-year')  # Latest year first
+    subjects = Subject.objects.all()  # For subject name display
     
     context = {
         'papers': papers,
         'subjects': subjects,
-        'years': years,
-        'selected_subject': subject_id,
     }
     return render(request, 'papers/papers_list.html', context)
+
 
 @login_required
 def download_paper(request, paper_id):

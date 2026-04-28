@@ -3,7 +3,7 @@
 
 {% block content %}
 <style>
-    /* Hero Section - Matching Dashboard Theme */
+    /* Hero Section */
     .papers-hero {
         background: linear-gradient(135deg, #2C3E50, #34495E);
         color: white;
@@ -27,45 +27,21 @@
         opacity: 0.9;
     }
     
-    /* Subject Cards - Simple White Cards */
-    .subject-card {
-        cursor: pointer;
-        transition: all 0.3s ease;
+    /* Download Button */
+    .download-btn {
+        background: #27AE60;
         border: none;
-        border-radius: 12px;
-        padding: 12px;
-        text-align: center;
-        background: white;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    
-    .subject-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    
-    .subject-card.active {
-        background: #2C3E50;
+        padding: 5px 15px;
+        border-radius: 20px;
         color: white;
+        text-decoration: none;
+        font-size: 12px;
+        display: inline-block;
+        transition: all 0.3s ease;
     }
     
-    .subject-card.active .text-muted {
-        color: rgba(255,255,255,0.7) !important;
-    }
-    
-    .subject-icon {
-        font-size: 1.8rem;
-        margin-bottom: 8px;
-    }
-    
-    .subject-card h6 {
-        font-size: 0.85rem;
-        margin-bottom: 3px;
-        font-weight: 600;
-    }
-    
-    .subject-card small {
-        font-size: 0.7rem;
+    .download-btn:hover {
+        background: #229954;
     }
     
     /* Badges */
@@ -75,7 +51,6 @@
         padding: 3px 10px;
         border-radius: 15px;
         font-size: 11px;
-        font-weight: 500;
         display: inline-block;
     }
     
@@ -88,73 +63,49 @@
         display: inline-block;
     }
     
-    /* Download Button */
-    .download-btn {
-        background: #27AE60;
-        border: none;
-        padding: 5px 12px;
-        border-radius: 15px;
+    .subject-badge {
+        background: #3498DB;
         color: white;
-        text-decoration: none;
-        font-size: 11px;
-        display: inline-block;
-        transition: all 0.3s ease;
-    }
-    
-    .download-btn:hover {
-        background: #229954;
-        transform: scale(1.02);
-        color: white;
-    }
-    
-    /* Filter Bar */
-    .filter-bar {
-        background: #F8F9FA;
-        padding: 15px;
+        padding: 3px 10px;
         border-radius: 12px;
-        margin-bottom: 25px;
+        font-size: 11px;
     }
     
-    .filter-select {
-        border-radius: 8px;
-        padding: 8px 12px;
-        border: 1px solid #ddd;
+    /* Section Title */
+    .section-title {
+        margin-bottom: 20px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #3498DB;
+        display: inline-block;
+        color: #2C3E50;
+        font-weight: 600;
+    }
+    
+    /* Table */
+    .papers-table {
         width: 100%;
-        font-size: 14px;
+        border-collapse: collapse;
     }
     
-    .filter-select:focus {
-        outline: none;
-        border-color: #3498DB;
+    .papers-table th {
+        background: #F8F9FA;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #2C3E50;
+        border-bottom: 2px solid #E9ECEF;
     }
     
-    /* Search Box */
-    .search-wrapper {
-        position: relative;
-        margin-bottom: 25px;
+    .papers-table td {
+        padding: 12px;
+        border-bottom: 1px solid #E9ECEF;
+        font-size: 0.85rem;
+        vertical-align: middle;
     }
     
-    .search-wrapper i {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #95A5A6;
-        font-size: 14px;
-    }
-    
-    .search-input {
-        width: 100%;
-        padding: 10px 15px 10px 40px;
-        border: 1px solid #ddd;
-        border-radius: 25px;
-        font-size: 14px;
-        transition: all 0.3s ease;
-    }
-    
-    .search-input:focus {
-        outline: none;
-        border-color: #3498DB;
+    .papers-table tr:hover {
+        background: #F8F9FA;
     }
     
     /* Empty State */
@@ -177,62 +128,10 @@
         color: #2C3E50;
     }
     
-    /* Section Title */
-    .section-title {
-        margin-bottom: 20px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid #3498DB;
-        display: inline-block;
-        color: #2C3E50;
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-    
-    /* Table */
-    .papers-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .papers-table th {
-        background: #F8F9FA;
-        padding: 12px;
-        text-align: left;
-        font-weight: 600;
-        font-size: 0.8rem;
-        color: #2C3E50;
-        border-bottom: 2px solid #E9ECEF;
-    }
-    
-    .papers-table td {
-        padding: 12px;
-        border-bottom: 1px solid #E9ECEF;
-        font-size: 0.85rem;
-        vertical-align: middle;
-    }
-    
-    .papers-table tr:hover {
-        background: #F8F9FA;
-    }
-    
-    .subject-badge {
-        background: #3498DB;
-        color: white;
-        padding: 3px 10px;
-        border-radius: 12px;
-        font-size: 11px;
-    }
-    
     @media (max-width: 768px) {
         .papers-table th, .papers-table td {
             padding: 8px;
             font-size: 0.75rem;
-        }
-        .subject-card {
-            padding: 8px;
-        }
-        .subject-icon {
-            font-size: 1.3rem;
         }
     }
 </style>
@@ -243,92 +142,16 @@
         <h1>
             <i class="fas fa-file-alt"></i> Previous Year Papers
         </h1>
-        <p class="mb-0">Practice with real exam papers from previous years</p>
+        <p class="mb-0">Practice with real exam papers from BCS, BCA, and all CS subjects</p>
     </div>
 
-    <!-- Search Bar -->
-    <div class="search-wrapper">
-        <i class="fas fa-search"></i>
-        <input type="text" class="search-input" id="searchPapers" placeholder="Search for papers...">
-    </div>
-
-    <!-- Subject Filters -->
-    <div class="mb-4">
-        <h4 class="section-title">
-            <i class="fas fa-graduation-cap me-2"></i>Subjects
-        </h4>
-        <div class="row" id="subjectFilters">
-            <div class="col-md-2 col-6 mb-3">
-                <div class="subject-card active" data-subject="all">
-                    <div class="subject-icon">
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <h6>All Papers</h6>
-                    <small class="text-muted">{{ papers|length }} papers</small>
-                </div>
-            </div>
-            {% for subject in subjects %}
-            <div class="col-md-2 col-6 mb-3">
-                <div class="subject-card" data-subject="{{ subject.id }}">
-                    <div class="subject-icon">
-                        {% if subject.name == "Python" %}
-                            <i class="fab fa-python"></i>
-                        {% elif subject.name == "JavaScript" %}
-                            <i class="fab fa-js"></i>
-                        {% elif subject.name == "Java" %}
-                            <i class="fab fa-java"></i>
-                        {% else %}
-                            <i class="fas fa-file-alt"></i>
-                        {% endif %}
-                    </div>
-                    <h6>{{ subject.name }}</h6>
-                    <small class="text-muted">{{ subject.papers.count }} papers</small>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- Year and Semester Filters -->
-    <div class="filter-bar">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label class="form-label fw-bold small mb-1"><i class="fas fa-calendar me-1"></i>Filter by Year</label>
-                <select id="yearFilter" class="filter-select">
-                    <option value="all">All Years</option>
-                    {% for year in years %}
-                    <option value="{{ year }}">{{ year }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-bold small mb-1"><i class="fas fa-layer-group me-1"></i>Filter by Semester</label>
-                <select id="semesterFilter" class="filter-select">
-                    <option value="all">All Semesters</option>
-                    <option value="1">Semester 1</option>
-                    <option value="2">Semester 2</option>
-                    <option value="3">Semester 3</option>
-                    <option value="4">Semester 4</option>
-                    <option value="5">Semester 5</option>
-                    <option value="6">Semester 6</option>
-                    <option value="7">Semester 7</option>
-                    <option value="8">Semester 8</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <!-- Papers List -->
+    <!-- Papers List - No Filters -->
     <div>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="section-title" style="border-bottom: none;">
-                <i class="fas fa-file-pdf text-danger me-2"></i>
-                <span id="categoryTitle">All Papers</span>
-            </h4>
-            <span class="text-muted small" id="papersCount"></span>
-        </div>
+        <h4 class="section-title">
+            <i class="fas fa-file-pdf text-danger me-2"></i>All Question Papers
+        </h4>
         
-        <div class="table-responsive">
+        <div class="table-responsive mt-3">
             <table class="papers-table">
                 <thead>
                     <tr>
@@ -340,13 +163,9 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="papersContainer">
+                <tbody>
                     {% for paper in papers %}
-                    <tr class="paper-item" 
-                        data-subject="{{ paper.subject.id }}" 
-                        data-title="{{ paper.title|lower }}"
-                        data-year="{{ paper.year }}"
-                        data-semester="{{ paper.semester }}">
+                    <tr>
                         <td>{{ paper.title }}</td>
                         <td><span class="subject-badge">{{ paper.subject.name }}</span></td>
                         <td><span class="year-badge">{{ paper.year }}</span></td>
@@ -378,135 +197,5 @@
             </table>
         </div>
     </div>
-    
-    <!-- No Results Message -->
-    <div id="noResults" class="empty-state" style="display: none;">
-        <i class="fas fa-search"></i>
-        <h4>No papers found</h4>
-        <p class="text-muted">Try a different subject, year, or search term</p>
-        <button class="btn btn-sm btn-outline-primary mt-2" onclick="resetFilters()">
-            <i class="fas fa-redo me-2"></i>Reset Filters
-        </button>
-    </div>
 </div>
-
-<script>
-    var subjectCards = document.querySelectorAll('.subject-card');
-    var paperItems = document.querySelectorAll('.paper-item');
-    var searchInput = document.getElementById('searchPapers');
-    var yearFilter = document.getElementById('yearFilter');
-    var semesterFilter = document.getElementById('semesterFilter');
-    var noResults = document.getElementById('noResults');
-    var categoryTitle = document.getElementById('categoryTitle');
-    var papersCount = document.getElementById('papersCount');
-    
-    var currentSubject = 'all';
-    var currentSearch = '';
-    var currentYear = 'all';
-    var currentSemester = 'all';
-    
-    var subjectNames = {'all': 'All Papers'};
-    {% for subject in subjects %}
-    subjectNames['{{ subject.id }}'] = '{{ subject.name }}';
-    {% endfor %}
-    
-    function filterPapers() {
-        if (!paperItems.length) return;
-        
-        var visibleCount = 0;
-        for (var i = 0; i < paperItems.length; i++) {
-            var item = paperItems[i];
-            var itemSubject = item.getAttribute('data-subject');
-            var itemTitle = item.getAttribute('data-title');
-            var itemYear = item.getAttribute('data-year');
-            var itemSemester = item.getAttribute('data-semester');
-            
-            var subjectMatch = (currentSubject === 'all' || itemSubject === currentSubject);
-            var searchMatch = (currentSearch === '' || (itemTitle && itemTitle.indexOf(currentSearch) !== -1));
-            var yearMatch = (currentYear === 'all' || itemYear === currentYear);
-            var semesterMatch = (currentSemester === 'all' || itemSemester === currentSemester);
-            
-            if (subjectMatch && searchMatch && yearMatch && semesterMatch) {
-                item.style.display = 'table-row';
-                visibleCount++;
-            } else {
-                item.style.display = 'none';
-            }
-        }
-        
-        if (categoryTitle) {
-            categoryTitle.textContent = subjectNames[currentSubject] || 'Papers';
-        }
-        if (papersCount) {
-            papersCount.textContent = visibleCount + ' paper' + (visibleCount !== 1 ? 's' : '');
-        }
-        if (noResults) {
-            if (visibleCount === 0 && paperItems.length > 0) {
-                noResults.style.display = 'block';
-            } else {
-                noResults.style.display = 'none';
-            }
-        }
-    }
-    
-    if (subjectCards.length) {
-        for (var i = 0; i < subjectCards.length; i++) {
-            var card = subjectCards[i];
-            card.addEventListener('click', (function(c) {
-                return function() {
-                    for (var j = 0; j < subjectCards.length; j++) {
-                        subjectCards[j].classList.remove('active');
-                    }
-                    c.classList.add('active');
-                    currentSubject = c.getAttribute('data-subject');
-                    filterPapers();
-                };
-            })(card));
-        }
-    }
-    
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            currentSearch = this.value.toLowerCase();
-            filterPapers();
-        });
-    }
-    
-    if (yearFilter) {
-        yearFilter.addEventListener('change', function() {
-            currentYear = this.value;
-            filterPapers();
-        });
-    }
-    
-    if (semesterFilter) {
-        semesterFilter.addEventListener('change', function() {
-            currentSemester = this.value;
-            filterPapers();
-        });
-    }
-    
-    function resetFilters() {
-        currentSubject = 'all';
-        if (subjectCards.length) {
-            for (var i = 0; i < subjectCards.length; i++) {
-                if (subjectCards[i].getAttribute('data-subject') === 'all') {
-                    subjectCards[i].classList.add('active');
-                } else {
-                    subjectCards[i].classList.remove('active');
-                }
-            }
-        }
-        if (searchInput) searchInput.value = '';
-        if (yearFilter) yearFilter.value = 'all';
-        if (semesterFilter) semesterFilter.value = 'all';
-        currentSearch = '';
-        currentYear = 'all';
-        currentSemester = 'all';
-        filterPapers();
-    }
-    
-    window.resetFilters = resetFilters;
-    filterPapers();
-</script>
 {% endblock %}
