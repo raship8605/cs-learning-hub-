@@ -9,6 +9,6 @@ admin.site.register(Subject)
 admin.site.register(YouTubeVideo)
 admin.site.register(Note)
 admin.site.register(Quiz)
-admin.site.register(PreviousYearPaper)  # ← THIS MUST BE HERE
+admin.site.register(PreviousYearPaper)  
 admin.site.register(Question)
 admin.site.register(QuizAttempt)
