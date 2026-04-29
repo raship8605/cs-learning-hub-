@@ -42,6 +42,8 @@
     
     .download-btn:hover {
         background: #229954;
+        transform: scale(1.02);
+        color: white;
     }
     
     /* Badges */
@@ -79,6 +81,7 @@
         display: inline-block;
         color: #2C3E50;
         font-weight: 600;
+        font-size: 1.2rem;
     }
     
     /* Table */
@@ -128,10 +131,37 @@
         color: #2C3E50;
     }
     
+    /* Subject Filter Buttons - Simple */
+    .filter-btn {
+        display: inline-block;
+        padding: 8px 20px;
+        margin: 5px;
+        background: #f8f9fa;
+        color: #2C3E50;
+        text-decoration: none;
+        border-radius: 25px;
+        transition: all 0.3s;
+        font-size: 14px;
+    }
+    
+    .filter-btn:hover {
+        background: #3498DB;
+        color: white;
+    }
+    
+    .filter-btn.active {
+        background: #2C3E50;
+        color: white;
+    }
+    
     @media (max-width: 768px) {
         .papers-table th, .papers-table td {
             padding: 8px;
             font-size: 0.75rem;
+        }
+        .filter-btn {
+            padding: 5px 12px;
+            font-size: 12px;
         }
     }
 </style>
@@ -142,12 +172,29 @@
         <h1>
             <i class="fas fa-file-alt"></i> Previous Year Papers
         </h1>
-        <p class="mb-0">Practice with real exam papers from BCS, BCA, and all CS subjects</p>
+        <p class="mb-0">Practice with real exam papers from previous years</p>
     </div>
 
-    <!-- Papers List - No Filters -->
-    <div>
+    <!-- Subject Filters - Simple Django Links -->
+    <div class="mb-4">
         <h4 class="section-title">
+            <i class="fas fa-graduation-cap me-2"></i>Subjects
+        </h4>
+        <div>
+            <a href="{% url 'papers_list' %}" class="filter-btn {% if not selected_subject %}active{% endif %}">
+                All Papers ({{ papers|length }})
+            </a>
+            {% for subject in subjects %}
+            <a href="?subject={{ subject.id }}" class="filter-btn {% if selected_subject == subject.id|stringformat:'s' %}active{% endif %}">
+                {{ subject.name }} ({{ subject.papers.count }})
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Papers List -->
+    <div>
+        <h4 class="section-title" style="border-bottom: none;">
             <i class="fas fa-file-pdf text-danger me-2"></i>All Question Papers
         </h4>
         

@@ -122,17 +122,14 @@ def video_detail(request, video_id):
 # Notes List
 @login_required
 def notes_list(request):
+    """Display all study notes with subject filter"""
     subject_id = request.GET.get('subject')
-    search_query = request.GET.get('search')
     
     notes = Note.objects.all()
+    subjects = Subject.objects.all()
     
     if subject_id:
         notes = notes.filter(subject_id=subject_id)
-    if search_query:
-        notes = notes.filter(Q(title__icontains=search_query) | Q(description__icontains=search_query))
-    
-    subjects = Subject.objects.all()
     
     context = {
         'notes': notes,
@@ -141,22 +138,19 @@ def notes_list(request):
     }
     return render(request, 'notes/notes_list.html', context)
 
+
 @login_required
 def download_note(request, note_id):
+    """Download note file and increment download count"""
     note = get_object_or_404(Note, id=note_id)
     note.downloads += 1
     note.save()
     
-    # Log activity
-    UserActivity.objects.get_or_create(
-        user=request.user,
-        activity_type='note_download',
-        content_type='note',
-        content_id=note.id,
-        defaults={'content_title': note.title}
-    )
+
     
+    messages.success(request, f'Downloading: {note.title}')
     return redirect(note.file.url)
+
 @login_required
 def quiz_list(request):
     quizzes = Quiz.objects.filter(is_active=True)
@@ -287,33 +281,33 @@ def quiz_result(request, attempt_id):
 # Papers List
 @login_required
 def papers_list(request):
-    """Display all previous year papers - NO FILTERS"""
-    papers = PreviousYearPaper.objects.all().order_by('-year')  # Latest year first
-    subjects = Subject.objects.all()  # For subject name display
+    """Display all previous year papers with subject filter"""
+    subject_id = request.GET.get('subject')
+    
+    papers = PreviousYearPaper.objects.all().order_by('-year')
+    subjects = Subject.objects.all()
+    
+    if subject_id:
+        papers = papers.filter(subject_id=subject_id)
     
     context = {
         'papers': papers,
         'subjects': subjects,
+        'selected_subject': subject_id,
     }
     return render(request, 'papers/papers_list.html', context)
 
 
 @login_required
 def download_paper(request, paper_id):
+    """Download paper file and increment download count"""
     paper = get_object_or_404(PreviousYearPaper, id=paper_id)
     paper.downloads += 1
     paper.save()
     
-    # Log activity
-    UserActivity.objects.get_or_create(
-        user=request.user,
-        activity_type='paper_download',
-        content_type='paper',
-        content_id=paper.id,
-        defaults={'content_title': paper.title}
-    )
-    
+    messages.success(request, f'Downloading: {paper.title}')
     return redirect(paper.file.url)
+
 # My Progress
 @login_required
 def my_progress(request):

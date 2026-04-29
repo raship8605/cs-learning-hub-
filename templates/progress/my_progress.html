@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Hero Section */
+    .progress-hero {
+        background: linear-gradient(135deg, #2C3E50, #34495E);
+        color: white;
+        padding: 40px 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .progress-hero h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        font-weight: 500;
+    }
+    
+    .progress-hero h1 i {
+        margin-right: 12px;
+    }
+    
+    /* Stats Cards */
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #2C3E50;
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+        color: #7F8C8D;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Section Card */
+    .section-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        margin-top: 20px;
+    }
+    
+    .section-header {
+        background: #F8F9FA;
+        padding: 15px 20px;
+        border-bottom: 1px solid #E9ECEF;
+    }
+    
+    .section-header h5 {
+        margin: 0;
+        font-weight: 600;
+        color: #2C3E50;
+    }
+    
+    .section-header i {
+        color: #3498DB;
+        margin-right: 8px;
+    }
+    
+    /* Table */
+    .progress-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .progress-table th {
+        background: #F8F9FA;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.8rem;
+        color: #2C3E50;
+        border-bottom: 2px solid #E9ECEF;
+    }
+    
+    .progress-table td {
+        padding: 12px;
+        border-bottom: 1px solid #E9ECEF;
+        font-size: 0.85rem;
+    }
+    
+    .progress-table tr:hover {
+        background: #F8F9FA;
+    }
+    
+    /* Badges */
+    .badge-passed {
+        background: #27AE60;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+    }
+    
+    .badge-failed {
+        background: #E74C3C;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+    }
+    
+    /* Progress Bars */
+    .subject-progress {
+        margin-bottom: 15px;
+    }
+    
+    .subject-name {
+        font-weight: 500;
+        margin-bottom: 5px;
+        color: #2C3E50;
+    }
+    
+    .progress-bar-custom {
+        height: 8px;
+        border-radius: 4px;
+        background: #E9ECEF;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: #3498DB;
+        border-radius: 4px;
+        width: 0%;
+        transition: width 0.3s;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        background: #F8F9FA;
+        border-radius: 12px;
+    }
+    
+    .empty-state i {
+        font-size: 60px;
+        color: #ccc;
+        margin-bottom: 15px;
+    }
+    
+    @media (max-width: 768px) {
+        .progress-table th, .progress-table td {
+            padding: 8px;
+            font-size: 0.75rem;
+        }
+        .stat-number {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="container py-4">
+    <!-- Hero Section -->
+    <div class="progress-hero">
+        <h1>
+            <i class="fas fa-chart-line"></i> My Progress
+        </h1>
+        <p class="mb-0">Track your learning journey and performance</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-video text-primary"></i>
+                </div>
+                <div class="stat-number">{{ total_videos|default:0 }}</div>
+                <div class="stat-label">Videos Watched</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt text-success"></i>
+                </div>
+                <div class="stat-number">{{ total_notes|default:0 }}</div>
+                <div class="stat-label">Notes Downloaded</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-question-circle text-warning"></i>
+                </div>
+                <div class="stat-number">{{ total_quizzes|default:0 }}</div>
+                <div class="stat-label">Quizzes Taken</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-percent text-info"></i>
+                </div>
+                <div class="stat-number">{{ average_score|default:0 }}%</div>
+                <div class="stat-label">Average Score</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz History -->
+    <div class="section-card">
+        <div class="section-header">
+            <h5><i class="fas fa-history"></i> Quiz History</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="progress-table">
+                <thead>
+                    <tr>
+                        <th>Quiz Title</th>
+                        <th>Subject</th>
+                        <th>Score</th>
+                        <th>Percentage</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attempt in quiz_attempts %}
+                    <tr>
+                        <td>{{ attempt.quiz.title }}</td>
+                        <td>{{ attempt.quiz.subject.name }}</td>
+                        <td>{{ attempt.score }}/{{ attempt.total_marks }}</td>
+                        <td>{{ attempt.percentage|floatformat:0 }}%</td>
+                        <td>
+                            {% if attempt.passed %}
+                                <span class="badge-passed"><i class="fas fa-check me-1"></i>Passed</span>
+                            {% else %}
+                                <span class="badge-failed"><i class="fas fa-times me-1"></i>Failed</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ attempt.attempted_at|date:"M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <div class="empty-state">
+                                <i class="fas fa-question-circle"></i>
+                                <h4>No Quiz Attempts Yet</h4>
+                                <p class="text-muted">Take your first quiz to see your progress!</p>
+                                <a href="{% url 'quiz_list' %}" class="btn btn-primary btn-sm mt-2">Browse Quizzes</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="section-card mt-4">
+        <div class="section-header">
+            <h5><i class="fas fa-bell"></i> Recent Activity</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="progress-table">
+                <thead>
+                    <tr>
+                        <th>Activity</th>
+                        <th>Content</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in recent_activities %}
+                    <tr>
+                        <td>
+                            {% if activity.activity_type == 'video_watch' %}
+                                <i class="fas fa-video text-primary"></i> Watched Video
+                            {% elif activity.activity_type == 'note_download' %}
+                                <i class="fas fa-download text-success"></i> Downloaded Note
+                            {% elif activity.activity_type == 'quiz_taken' %}
+                                <i class="fas fa-question-circle text-warning"></i> Took Quiz
+                            {% elif activity.activity_type == 'paper_download' %}
+                                <i class="fas fa-file-pdf text-danger"></i> Downloaded Paper
+                            {% endif %}
+                        </td>
+                        <td>{{ activity.content_title }}</td>
+                        <td>{{ activity.timestamp|timesince }} ago</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center py-4">
+                            <div class="empty-state">
+                                <i class="fas fa-bell-slash"></i>
+                                <h4>No Recent Activity</h4>
+                                <p class="text-muted">Start learning to see your activity here!</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

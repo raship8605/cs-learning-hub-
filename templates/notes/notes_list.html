@@ -1,10 +1,10 @@
-make it {% extends 'base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
 <style>
-    /* Hero Section - Matching Dashboard Theme */
-    .papers-hero {
+    /* Hero Section */
+    .notes-hero {
         background: linear-gradient(135deg, #2C3E50, #34495E);
         color: white;
         padding: 40px 30px;
@@ -13,92 +13,58 @@ make it {% extends 'base.html' %}
         text-align: center;
     }
     
-    .papers-hero h1 {
+    .notes-hero h1 {
         font-size: 2rem;
         margin-bottom: 10px;
         font-weight: 500;
     }
     
-    .papers-hero h1 i {
+    .notes-hero h1 i {
         margin-right: 12px;
     }
     
-    .papers-hero p {
+    .notes-hero p {
         opacity: 0.9;
     }
     
-    /* Subject Cards - Simple White Cards */
-    .subject-card {
-        cursor: pointer;
+    /* Note Cards */
+    .note-card {
         transition: all 0.3s ease;
         border: none;
         border-radius: 12px;
-        padding: 12px;
-        text-align: center;
+        overflow: hidden;
         background: white;
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        height: 100%;
     }
     
-    .subject-card:hover {
+    .note-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
-    .subject-card.active {
-        background: #2C3E50;
-        color: white;
+    .note-icon {
+        background: #F8F9FA;
+        padding: 30px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
     }
     
-    .subject-card.active .text-muted {
-        color: rgba(255,255,255,0.7) !important;
+    .note-icon i {
+        font-size: 3rem;
+        color: #E74C3C;
     }
     
-    .subject-icon {
-        font-size: 1.8rem;
-        margin-bottom: 8px;
-    }
-    
-    .subject-card h6 {
-        font-size: 0.85rem;
-        margin-bottom: 3px;
-        font-weight: 600;
-    }
-    
-    .subject-card small {
-        font-size: 0.7rem;
-    }
-    
-    /* Badges */
-    .year-badge {
-        background: #3498DB;
-        color: white;
-        padding: 3px 10px;
-        border-radius: 15px;
-        font-size: 11px;
-        font-weight: 500;
-        display: inline-block;
-    }
-    
-    .semester-badge {
-        background: #95A5A6;
-        color: white;
-        padding: 3px 10px;
-        border-radius: 15px;
-        font-size: 11px;
-        display: inline-block;
-    }
-    
-    /* Download Button */
     .download-btn {
         background: #27AE60;
         border: none;
-        padding: 5px 12px;
-        border-radius: 15px;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        transition: all 0.3s;
         color: white;
         text-decoration: none;
-        font-size: 11px;
         display: inline-block;
-        transition: all 0.3s ease;
     }
     
     .download-btn:hover {
@@ -107,54 +73,44 @@ make it {% extends 'base.html' %}
         color: white;
     }
     
-    /* Filter Bar */
-    .filter-bar {
-        background: #F8F9FA;
-        padding: 15px;
+    /* Section Title */
+    .section-title {
+        margin-bottom: 20px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #3498DB;
+        display: inline-block;
+        color: #2C3E50;
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+    
+    /* Badge */
+    .subject-badge {
+        background: #3498DB;
+        font-size: 10px;
+        font-weight: 500;
+        padding: 3px 10px;
         border-radius: 12px;
-        margin-bottom: 25px;
+        color: white;
     }
     
-    .filter-select {
-        border-radius: 8px;
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        width: 100%;
-        font-size: 14px;
+    .note-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #2C3E50;
+        margin: 10px 0 8px;
     }
     
-    .filter-select:focus {
-        outline: none;
-        border-color: #3498DB;
+    .note-desc {
+        font-size: 0.75rem;
+        color: #7F8C8D;
+        margin-bottom: 10px;
+        line-height: 1.4;
     }
     
-    /* Search Box */
-    .search-wrapper {
-        position: relative;
-        margin-bottom: 25px;
-    }
-    
-    .search-wrapper i {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
+    .download-count {
+        font-size: 11px;
         color: #95A5A6;
-        font-size: 14px;
-    }
-    
-    .search-input {
-        width: 100%;
-        padding: 10px 15px 10px 40px;
-        border: 1px solid #ddd;
-        border-radius: 25px;
-        font-size: 14px;
-        transition: all 0.3s ease;
-    }
-    
-    .search-input:focus {
-        outline: none;
-        border-color: #3498DB;
     }
     
     /* Empty State */
@@ -177,336 +133,107 @@ make it {% extends 'base.html' %}
         color: #2C3E50;
     }
     
-    /* Section Title */
-    .section-title {
-        margin-bottom: 20px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid #3498DB;
+    /* Subject Filter Buttons - Simple */
+    .filter-btn {
         display: inline-block;
+        padding: 8px 20px;
+        margin: 5px;
+        background: #f8f9fa;
         color: #2C3E50;
-        font-weight: 600;
-        font-size: 1.1rem;
+        text-decoration: none;
+        border-radius: 25px;
+        transition: all 0.3s;
+        font-size: 14px;
     }
     
-    /* Table */
-    .papers-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .papers-table th {
-        background: #F8F9FA;
-        padding: 12px;
-        text-align: left;
-        font-weight: 600;
-        font-size: 0.8rem;
-        color: #2C3E50;
-        border-bottom: 2px solid #E9ECEF;
-    }
-    
-    .papers-table td {
-        padding: 12px;
-        border-bottom: 1px solid #E9ECEF;
-        font-size: 0.85rem;
-        vertical-align: middle;
-    }
-    
-    .papers-table tr:hover {
-        background: #F8F9FA;
-    }
-    
-    .subject-badge {
+    .filter-btn:hover {
         background: #3498DB;
         color: white;
-        padding: 3px 10px;
-        border-radius: 12px;
-        font-size: 11px;
+    }
+    
+    .filter-btn.active {
+        background: #2C3E50;
+        color: white;
     }
     
     @media (max-width: 768px) {
-        .papers-table th, .papers-table td {
-            padding: 8px;
-            font-size: 0.75rem;
+        .filter-btn {
+            padding: 5px 12px;
+            font-size: 12px;
         }
-        .subject-card {
-            padding: 8px;
-        }
-        .subject-icon {
-            font-size: 1.3rem;
+        .note-title {
+            font-size: 0.85rem;
         }
     }
 </style>
 
 <div class="container py-4">
     <!-- Hero Section -->
-    <div class="papers-hero">
+    <div class="notes-hero">
         <h1>
-            <i class="fas fa-file-alt"></i> Previous Year Papers
+            <i class="fas fa-book-open"></i> Study Notes
         </h1>
-        <p class="mb-0">Practice with real exam papers from previous years</p>
+        <p class="mb-0">Download comprehensive notes for all computer science subjects</p>
     </div>
 
-    <!-- Search Bar -->
-    <div class="search-wrapper">
-        <i class="fas fa-search"></i>
-        <input type="text" class="search-input" id="searchPapers" placeholder="Search for papers...">
-    </div>
-
-    <!-- Subject Filters -->
+    <!-- Subject Filters - Simple Django Links -->
     <div class="mb-4">
         <h4 class="section-title">
             <i class="fas fa-graduation-cap me-2"></i>Subjects
         </h4>
-        <div class="row" id="subjectFilters">
-            <div class="col-md-2 col-6 mb-3">
-                <div class="subject-card active" data-subject="all">
-                    <div class="subject-icon">
-                        <i class="fas fa-globe"></i>
+        <div>
+            <a href="{% url 'notes_list' %}" class="filter-btn {% if not selected_subject %}active{% endif %}">
+                All Notes ({{ notes|length }})
+            </a>
+            {% for subject in subjects %}
+            <a href="?subject={{ subject.id }}" class="filter-btn {% if selected_subject == subject.id|stringformat:'s' %}active{% endif %}">
+                {{ subject.name }} ({{ subject.notes.count }})
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Notes Grid -->
+    <div>
+        <h4 class="section-title" style="border-bottom: none;">
+            <i class="fas fa-file-alt text-danger me-2"></i>All Notes
+        </h4>
+        
+        <div class="row mt-3">
+            {% for note in notes %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="note-card">
+                    <div class="note-icon">
+                        <i class="fas fa-file-pdf"></i>
                     </div>
-                    <h6>All Papers</h6>
-                    <small class="text-muted">{{ papers|length }} papers</small>
+                    <div class="p-3">
+                        <span class="badge subject-badge mb-2">{{ note.subject.name }}</span>
+                        <div class="note-title">{{ note.title|truncatechars:50 }}</div>
+                        <div class="note-desc">{{ note.description|truncatechars:75|default:"Comprehensive study material with examples and practice questions." }}</div>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <span class="download-count"><i class="fas fa-download me-1"></i> {{ note.downloads }} downloads</span>
+                            <a href="{% url 'download_note' note.id %}" class="download-btn">
+                                <i class="fas fa-download me-1"></i> Download
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-            {% for subject in subjects %}
-            <div class="col-md-2 col-6 mb-3">
-                <div class="subject-card" data-subject="{{ subject.id }}">
-                    <div class="subject-icon">
-                        {% if subject.name == "Python" %}
-                            <i class="fab fa-python"></i>
-                        {% elif subject.name == "JavaScript" %}
-                            <i class="fab fa-js"></i>
-                        {% elif subject.name == "Java" %}
-                            <i class="fab fa-java"></i>
-                        {% else %}
-                            <i class="fas fa-file-alt"></i>
-                        {% endif %}
-                    </div>
-                    <h6>{{ subject.name }}</h6>
-                    <small class="text-muted">{{ subject.papers.count }} papers</small>
+            {% empty %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="fas fa-book-open"></i>
+                    <h4>No Notes Available</h4>
+                    <p class="text-muted">Check back later for new study materials!</p>
+                    {% if user.is_superuser %}
+                    <a href="/admin/learning_app/note/add/" class="btn btn-primary btn-sm mt-2">
+                        <i class="fas fa-plus me-2"></i>Add Notes
+                    </a>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
-
-    <!-- Year and Semester Filters -->
-    <div class="filter-bar">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label class="form-label fw-bold small mb-1"><i class="fas fa-calendar me-1"></i>Filter by Year</label>
-                <select id="yearFilter" class="filter-select">
-                    <option value="all">All Years</option>
-                    {% for year in years %}
-                    <option value="{{ year }}">{{ year }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-bold small mb-1"><i class="fas fa-layer-group me-1"></i>Filter by Semester</label>
-                <select id="semesterFilter" class="filter-select">
-                    <option value="all">All Semesters</option>
-                    <option value="1">Semester 1</option>
-                    <option value="2">Semester 2</option>
-                    <option value="3">Semester 3</option>
-                    <option value="4">Semester 4</option>
-                    <option value="5">Semester 5</option>
-                    <option value="6">Semester 6</option>
-                    <option value="7">Semester 7</option>
-                    <option value="8">Semester 8</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <!-- Papers List -->
-    <div>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="section-title" style="border-bottom: none;">
-                <i class="fas fa-file-pdf text-danger me-2"></i>
-                <span id="categoryTitle">All Papers</span>
-            </h4>
-            <span class="text-muted small" id="papersCount"></span>
-        </div>
-        
-        <div class="table-responsive">
-            <table class="papers-table">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Subject</th>
-                        <th>Year</th>
-                        <th>Semester</th>
-                        <th>Downloads</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="papersContainer">
-                    {% for paper in papers %}
-                    <tr class="paper-item" 
-                        data-subject="{{ paper.subject.id }}" 
-                        data-title="{{ paper.title|lower }}"
-                        data-year="{{ paper.year }}"
-                        data-semester="{{ paper.semester }}">
-                        <td>{{ paper.title }}</td>
-                        <td><span class="subject-badge">{{ paper.subject.name }}</span></td>
-                        <td><span class="year-badge">{{ paper.year }}</span></td>
-                        <td><span class="semester-badge">Sem {{ paper.semester }}</span></td>
-                        <td><i class="fas fa-download me-1"></i> {{ paper.downloads }}</td>
-                        <td>
-                            <a href="{% url 'download_paper' paper.id %}" class="download-btn">
-                                <i class="fas fa-download me-1"></i> Download
-                            </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center py-5">
-                            <div class="empty-state">
-                                <i class="fas fa-file-alt"></i>
-                                <h4>No Papers Available</h4>
-                                <p class="text-muted">Check back later for previous year papers!</p>
-                                {% if user.is_superuser %}
-                                <a href="/admin/learning_app/previousyearpaper/add/" class="btn btn-primary btn-sm mt-2">
-                                    <i class="fas fa-plus me-2"></i>Add Papers
-                                </a>
-                                {% endif %}
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    
-    <!-- No Results Message -->
-    <div id="noResults" class="empty-state" style="display: none;">
-        <i class="fas fa-search"></i>
-        <h4>No papers found</h4>
-        <p class="text-muted">Try a different subject, year, or search term</p>
-        <button class="btn btn-sm btn-outline-primary mt-2" onclick="resetFilters()">
-            <i class="fas fa-redo me-2"></i>Reset Filters
-        </button>
-    </div>
 </div>
-
-<script>
-    var subjectCards = document.querySelectorAll('.subject-card');
-    var paperItems = document.querySelectorAll('.paper-item');
-    var searchInput = document.getElementById('searchPapers');
-    var yearFilter = document.getElementById('yearFilter');
-    var semesterFilter = document.getElementById('semesterFilter');
-    var noResults = document.getElementById('noResults');
-    var categoryTitle = document.getElementById('categoryTitle');
-    var papersCount = document.getElementById('papersCount');
-    
-    var currentSubject = 'all';
-    var currentSearch = '';
-    var currentYear = 'all';
-    var currentSemester = 'all';
-    
-    var subjectNames = {'all': 'All Papers'};
-    // {% for subject in subjects %}
-    // subjectNames['{{ subject.id }}'] = '{{ subject.name }}';
-    // {% endfor %}
-    
-    function filterPapers() {
-        if (!paperItems.length) return;
-        
-        var visibleCount = 0;
-        for (var i = 0; i < paperItems.length; i++) {
-            var item = paperItems[i];
-            var itemSubject = item.getAttribute('data-subject');
-            var itemTitle = item.getAttribute('data-title');
-            var itemYear = item.getAttribute('data-year');
-            var itemSemester = item.getAttribute('data-semester');
-            
-            var subjectMatch = (currentSubject === 'all' || itemSubject === currentSubject);
-            var searchMatch = (currentSearch === '' || (itemTitle && itemTitle.indexOf(currentSearch) !== -1));
-            var yearMatch = (currentYear === 'all' || itemYear === currentYear);
-            var semesterMatch = (currentSemester === 'all' || itemSemester === currentSemester);
-            
-            if (subjectMatch && searchMatch && yearMatch && semesterMatch) {
-                item.style.display = 'table-row';
-                visibleCount++;
-            } else {
-                item.style.display = 'none';
-            }
-        }
-        
-        if (categoryTitle) {
-            categoryTitle.textContent = subjectNames[currentSubject] || 'Papers';
-        }
-        if (papersCount) {
-            papersCount.textContent = visibleCount + ' paper' + (visibleCount !== 1 ? 's' : '');
-        }
-        if (noResults) {
-            if (visibleCount === 0 && paperItems.length > 0) {
-                noResults.style.display = 'block';
-            } else {
-                noResults.style.display = 'none';
-            }
-        }
-    }
-    
-    if (subjectCards.length) {
-        for (var i = 0; i < subjectCards.length; i++) {
-            var card = subjectCards[i];
-            card.addEventListener('click', (function(c) {
-                return function() {
-                    for (var j = 0; j < subjectCards.length; j++) {
-                        subjectCards[j].classList.remove('active');
-                    }
-                    c.classList.add('active');
-                    currentSubject = c.getAttribute('data-subject');
-                    filterPapers();
-                };
-            })(card));
-        }
-    }
-    
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            currentSearch = this.value.toLowerCase();
-            filterPapers();
-        });
-    }
-    
-    if (yearFilter) {
-        yearFilter.addEventListener('change', function() {
-            currentYear = this.value;
-            filterPapers();
-        });
-    }
-    
-    if (semesterFilter) {
-        semesterFilter.addEventListener('change', function() {
-            currentSemester = this.value;
-            filterPapers();
-        });
-    }
-    
-    function resetFilters() {
-        currentSubject = 'all';
-        if (subjectCards.length) {
-            for (var i = 0; i < subjectCards.length; i++) {
-                if (subjectCards[i].getAttribute('data-subject') === 'all') {
-                    subjectCards[i].classList.add('active');
-                } else {
-                    subjectCards[i].classList.remove('active');
-                }
-            }
-        }
-        if (searchInput) searchInput.value = '';
-        if (yearFilter) yearFilter.value = 'all';
-        if (semesterFilter) semesterFilter.value = 'all';
-        currentSearch = '';
-        currentYear = 'all';
-        currentSemester = 'all';
-        filterPapers();
-    }
-    
-    window.resetFilters = resetFilters;
-    filterPapers();
-</script>
 {% endblock %}
